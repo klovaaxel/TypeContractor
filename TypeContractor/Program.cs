@@ -13,7 +13,6 @@ public static class Program
     // FIXME: Arguments or configuration
     public static readonly Dictionary<string, string> Replacements = new()
     {
-        { "Hogia.SalaryService.Common.", string.Empty }
     };
 
     private static void Main(string[] args)
@@ -21,7 +20,7 @@ public static class Program
         // FIXME: Read as arguments
         var assemblies = new Dictionary<string, string>
         {
-            { "Hogia.SalaryService.Common", "../../../../deps/Hogia.SalaryService.Common.dll" }
+            { "ExampleContracts", "ExampleContracts.dll" }
         };
 
         // FIXME: Arguments, or make configurable
