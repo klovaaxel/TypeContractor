@@ -55,15 +55,12 @@ public static class Program
 
             var types = assembly.GetTypes()
                 .Where(t => suffixes.Any(suffix => t.Name.EndsWith(suffix, StringComparison.InvariantCultureIgnoreCase)))
+                .Select(t => ContractedType.FromName(t.FullName!, t))
                 .ToList();
 
             Console.WriteLine($"    Found {types.Count} types that matches the suffix");
 
-            var fullNames = types
-                .Select(t => ContractedType.FromName(t.FullName!, t))
-                .ToList();
-
-            var folders = fullNames
+            var folders = types
                 .Select(t => t.Folder)
                 .DistinctBy(x => x.Path)
                 .OrderBy(x => x.Path)
@@ -71,7 +68,7 @@ public static class Program
 
             foreach (var folder in folders)
             {
-                var items = fullNames
+                var items = types
                     .Where(n => n.Folder == folder);
 
                 toConvert.AddRange(items);
@@ -81,28 +78,18 @@ public static class Program
             var writer = new TypeScriptWriter(outputPath);
 
             var cbm = Benchmark.Start("Conversion");
-            var allTypes = fullNames
+            var outputTypes = types
                 .Select(converter.Convert)
                 .ToList();
             cbm.Stop();
 
-            allTypes = allTypes.Concat(converter.CustomMappedTypes.Values).ToList();
+            outputTypes = outputTypes.Concat(converter.CustomMappedTypes.Values).ToList();
 
             var wbm = Benchmark.Start("Writing", writeInitial: true);
-            var wdto = Benchmark.Start("Writing Dto/Request/Response");
-            foreach (var type in allTypes)
+            foreach (var type in outputTypes)
             {
-                writer.Write(type, allTypes);
+                writer.Write(type, outputTypes);
             }
-            wdto.Stop();
-
-            var wcbm = Benchmark.Start("Writing custom types");
-            foreach (var customType in converter.CustomMappedTypes)
-            {
-                writer.Write(customType.Value, allTypes);
-            }
-            wcbm.Stop();
-
             wbm.Stop();
             sw.Stop();
         }
