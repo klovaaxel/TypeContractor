@@ -60,8 +60,9 @@ public class TypeScriptWriter
                 throw new ArgumentException($"Unable to find type for {import.SourceType}");
 
             var relativePath = PathHelpers.RelativePath(importedType.FullName, type.FullName);
-            
-            _builder.AppendLine(CultureInfo.InvariantCulture, $"import {{ {import.DestinationType} }} from \"{relativePath}/{importedType.Name}\";");
+            var importPath = $"{relativePath}/{importedType.Name}".Replace("//", "/", StringComparison.InvariantCultureIgnoreCase);
+
+            _builder.AppendLine(CultureInfo.InvariantCulture, $"import {{ {import.DestinationType} }} from \"{importPath}\";");
         }
 
         if (imports.Any())
