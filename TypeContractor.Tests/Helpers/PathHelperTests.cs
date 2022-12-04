@@ -23,9 +23,9 @@ namespace TypeContractor.Tests.Helpers
         [Fact]
         public void Target_One_Level_Up_Returns_Doubledot()
         {
-            var result = PathHelpers.RelativePath("Some.Nested.Class", "Some.Nested.Deeper.Interface");
+            var result = PathHelpers.RelativePath("ExampleContracts.Permissions", "ExampleContracts.v1.FilePermissionDto");
 
-            result.Should().Be("../Nested");
+            result.Should().Be("../");
         }
 
         [Fact]
@@ -33,7 +33,7 @@ namespace TypeContractor.Tests.Helpers
         {
             var result = PathHelpers.RelativePath("Some.Nested.Deeper.Class", "Some.Nested.Interface");
 
-            result.Should().Be("./Deeper");
+            result.Should().Be("./");
         }
 
         [Fact]

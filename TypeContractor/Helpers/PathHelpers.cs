@@ -66,7 +66,6 @@ namespace TypeContractor.Helpers
             {
                 relativePath.Append(absDirs[index] + "/");
             }
-            relativePath.Append(absDirs[^1]);
 
             return relativePath.ToString();
         }
