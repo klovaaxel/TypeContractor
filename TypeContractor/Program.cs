@@ -10,51 +10,34 @@ namespace TypeContractor;
 
 public static class Program
 {
-    // FIXME: Arguments or configuration
-    public static readonly Dictionary<string, string> Replacements = new()
-    {
-    };
-
     private static void Main(string[] args)
     {
-        // FIXME: Read as arguments
-        var assemblies = new Dictionary<string, string>
-        {
-            { "ExampleContracts", "ExampleContracts.dll" }
-        };
-
-        // FIXME: Arguments, or make configurable
-        var suffixes = new[]
-        {
-            "Dto",
-            "Request",
-            "Response"
-        };
-
-        // FIXME: Should be configurable
-        var outputPath = Path.Combine(Directory.GetCurrentDirectory(), "output");
+        var configuration = Configuration
+            .WithDefaultConfiguration()
+            .AddAssembly("ExampleContracts", "ExampleContracts.dll")
+            .SetOutputDirectory(Path.Combine(Directory.GetCurrentDirectory(), "output"));
         var toConvert = new List<ContractedType>();
 
         // FIXME: Cleanup while debugging
 #if DEBUG
         Benchmark.Measure("Cleanup", () =>
         {
-            if (Directory.Exists(outputPath))
+            if (Directory.Exists(configuration.OutputPath))
             {
-                Directory.Delete(outputPath, true);
-                Directory.CreateDirectory(outputPath);
+                Directory.Delete(configuration.OutputPath, true);
+                Directory.CreateDirectory(configuration.OutputPath);
             }
         });
 #endif
 
-        foreach (var (assemblyName, assemblyPath) in assemblies)
+        foreach (var (assemblyName, assemblyPath) in configuration.Assemblies)
         {
             var sw = Benchmark.Start(assemblyName, writeInitial: true);
             var assembly = Assembly.LoadFrom(assemblyPath);
 
             var types = assembly.GetTypes()
-                .Where(t => suffixes.Any(suffix => t.Name.EndsWith(suffix, StringComparison.InvariantCultureIgnoreCase)))
-                .Select(t => ContractedType.FromName(t.FullName!, t))
+                .Where(t => configuration.Suffixes.Any(suffix => t.Name.EndsWith(suffix, StringComparison.InvariantCultureIgnoreCase)))
+                .Select(t => ContractedType.FromName(t.FullName!, t, configuration))
                 .ToList();
 
             Console.WriteLine($"    Found {types.Count} types that matches the suffix");
@@ -73,8 +56,8 @@ public static class Program
                 toConvert.AddRange(items);
             }
 
-            var converter = new TypeScriptConverter();
-            var writer = new TypeScriptWriter(outputPath);
+            var converter = new TypeScriptConverter(configuration);
+            var writer = new TypeScriptWriter(configuration.OutputPath);
 
             var cbm = Benchmark.Start("Conversion");
             var outputTypes = types

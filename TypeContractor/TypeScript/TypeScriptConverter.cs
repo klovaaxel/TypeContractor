@@ -7,27 +7,12 @@ namespace TypeContractor.TypeScript;
 
 public class TypeScriptConverter
 {
-    private const string DstString = "string";
-    private const string DstBool = "boolean";
-    private const string DstNumber = "number";
-    private const string DstByteArray = "number[]";
+    private readonly Configuration _configuration;
 
-    public static readonly Dictionary<Type, string> Map = new()
+    public TypeScriptConverter(Configuration configuration)
     {
-        { typeof(string), DstString },
-        { typeof(DateTime), DstString },
-        { typeof(DateTimeOffset), DstString },
-        { typeof(Guid), DstString },
-        { typeof(bool), DstBool },
-        { typeof(byte), DstNumber },
-        { typeof(short), DstNumber },
-        { typeof(int), DstNumber },
-        { typeof(long), DstNumber },
-        { typeof(decimal), DstNumber },
-        { typeof(float), DstNumber },
-        { typeof(Stream), DstByteArray },
-        { typeof(CultureInfo), DstString },
-    };
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+    }
 
     public Dictionary<Type, OutputType> CustomMappedTypes { get; } = new();
 
@@ -44,7 +29,7 @@ public class TypeScriptConverter
         return new(
             type.Name,
             type.FullName!,
-            contractedType ?? ContractedType.FromName(type.FullName!, type),
+            contractedType ?? ContractedType.FromName(type.FullName!, type, _configuration),
             type.IsEnum,
             type.IsEnum ? null : GetProperties(type).Distinct().ToList(),
             type.IsEnum ? GetEnumProperties(type) : null
@@ -100,7 +85,7 @@ public class TypeScriptConverter
 
     private DestinationType GetDestinationType(in Type sourceType)
     {
-        if (Map.TryGetValue(sourceType, out string? destType))
+        if (_configuration.TypeMaps.TryGetValue(sourceType, out string? destType))
             return new DestinationType(destType, true, false, null);
 
         if (CustomMappedTypes.TryGetValue(sourceType, out OutputType? customType))
