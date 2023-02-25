@@ -17,6 +17,10 @@ public class TypeContractorConfiguration
     public IReadOnlyDictionary<string, string> Replacements => _replacements;
     public string OutputPath => _outputPath ?? throw new InvalidOperationException("Output path is not configured");
 
+    /// <summary>
+    /// Set up a default configuration using <see cref="AddDefaultSuffixes"/> and <see cref="AddDefaultTypeMaps"/>
+    /// </summary>
+    /// <returns></returns>
     public static TypeContractorConfiguration WithDefaultConfiguration()
     {
         return new TypeContractorConfiguration()
@@ -24,12 +28,28 @@ public class TypeContractorConfiguration
             .AddDefaultTypeMaps();
     }
 
+    /// <summary>
+    /// Add default suffixes (<c>Dto</c>, <c>Request</c> and <c>Response</c>) to the list of classes
+    /// to match and convert.
+    /// 
+    /// <para>To add custom suffixes, use <see cref="AddSuffix(string[])"/></para>
+    /// </summary>
+    /// <returns>The configuration object for continued chaining</returns>
     public TypeContractorConfiguration AddDefaultSuffixes()
     {
         _suffixes.AddRange(new[] { "Dto", "Request", "Response" });
         return this;
     }
 
+    /// <summary>
+    /// Adds mappings for the most common C# types to their TypeScript counterparts.
+    /// 
+    /// <para>
+    /// To add custom mappings, use <see cref="AddCustomMap(Type, string)"/>
+    /// or <see cref="AddCustomMap(string, string)"/>
+    /// </para>
+    /// </summary>
+    /// <returns>The configuration object for continued chaining</returns>
     public TypeContractorConfiguration AddDefaultTypeMaps()
     {
         AddCustomMap(typeof(string), DestinationTypes.StringType);
@@ -63,6 +83,8 @@ public class TypeContractorConfiguration
     /// <param name="type"></param>
     /// <param name="destinationType"></param>
     /// <returns>The configuration object for continued chaining</returns>
+    /// <exception cref="ArgumentNullException">If <paramref name="type"/> or <paramref name="destinationType"/> is null or empty</exception>
+    /// <exception cref="InvalidOperationException">If the type being added already exists in the map</exception>
     public TypeContractorConfiguration AddCustomMap(Type type, string destinationType)
     {
         ArgumentNullException.ThrowIfNull(type, nameof(type));
@@ -84,10 +106,15 @@ public class TypeContractorConfiguration
     /// <param name="type"></param>
     /// <param name="destinationType"></param>
     /// <returns>The configuration object for continued chaining</returns>
+    /// <exception cref="ArgumentNullException">If <paramref name="type"/> or <paramref name="destinationType"/> is null or empty</exception>
+    /// <exception cref="InvalidOperationException">If the type being added already exists in the map</exception>
     public TypeContractorConfiguration AddCustomMap(string type, string destinationType)
     {
         if (string.IsNullOrWhiteSpace(type))
             throw new ArgumentNullException(nameof(type));
+
+        if (string.IsNullOrWhiteSpace(destinationType))
+            throw new ArgumentNullException(nameof(destinationType));
 
         if (!_map.TryAdd(type, destinationType))
             throw new InvalidOperationException($"Unable to add {type} to list of maps. Already added?");
@@ -95,6 +122,11 @@ public class TypeContractorConfiguration
         return this;
     }
 
+    /// <summary>
+    /// Add a list of custom suffixes to filter classes by
+    /// </summary>
+    /// <param name="suffixes"></param>
+    /// <returns></returns>
     public TypeContractorConfiguration AddSuffix(params string[] suffixes)
     {
         _suffixes.AddRange(suffixes);
@@ -117,6 +149,42 @@ public class TypeContractorConfiguration
         return this;
     }
 
+    /// <summary>
+    /// Add a string to be stripped from type names and folders.
+    /// 
+    /// <para>
+    /// See also <see cref="AddReplacement(string, string)"/>
+    /// </para>
+    /// 
+    /// <example>
+    /// Example:
+    /// 
+    /// <code>
+    /// .StripString("My.Deeply.Nested.Namespace")
+    /// </code>
+    /// 
+    /// will turn <c>My.Deeply.Nested.Namespace.ClassName</c> into <c>ClassName</c>
+    /// and placed directly under <c>&lt;output>/ClassName.ts</c> when the files are written.
+    /// </example>
+    /// </summary>
+    /// <param name="searchString"></param>
+    /// <returns>The configuration object for continued chaining</returns>
+    /// <exception cref="InvalidOperationException">If <paramref name="searchString"/> already exists in the list of replacements</exception>
+    public TypeContractorConfiguration StripString(string searchString) => AddReplacement(searchString, string.Empty);
+
+    /// <summary>
+    /// Set the output directory for files to be written to.
+    /// 
+    /// <example>
+    /// For example:
+    /// 
+    /// <code>
+    /// .SetOutputDirectory(Path.Combine(Directory.GetCurrentDirectory(), "App", "src", "api")));
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="outputDirectory"></param>
+    /// <returns>The configuration object for continued chaining</returns>
     public TypeContractorConfiguration SetOutputDirectory(string outputDirectory)
     {
         _outputPath = outputDirectory;

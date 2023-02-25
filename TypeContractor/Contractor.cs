@@ -14,6 +14,13 @@ public class Contractor
         return new Contractor(configuration);
     }
 
+    /// <summary>
+    /// Construct a <see cref="Contractor"/> using <see cref="TypeContractorConfiguration.WithDefaultConfiguration"/>
+    /// and provide an action to continue configuring Contractor.
+    /// </summary>
+    /// <param name="configurationBuilder"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="configurationBuilder"/> is null</exception>
     public static Contractor FromDefaultConfiguration(Action<TypeContractorConfiguration> configurationBuilder)
     {
         ArgumentNullException.ThrowIfNull(configurationBuilder, nameof(configurationBuilder));
