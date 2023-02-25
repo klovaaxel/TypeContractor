@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using TypeContractor.Helpers;
 using TypeContractor.Output;
 
@@ -80,6 +76,7 @@ public class TypeScriptWriter
             _builder.AppendLine(CultureInfo.InvariantCulture, $"export interface {type.Name} {{");
         }
     }
+
     private void BuildBody(OutputType type)
     {
         foreach (var property in type.Properties ?? Enumerable.Empty<OutputProperty>())
