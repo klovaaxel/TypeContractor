@@ -9,7 +9,7 @@ internal static class TypeChecks
         if (sourceType.IsInterface && sourceType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
             return true;
 
-        // We can apparently treat a string as IEnumerable, which we don't want
+        // We can treat a string as IEnumerable, which we don't want to happen here
         if (sourceType == typeof(string))
             return false;
 
