@@ -85,7 +85,7 @@ public class TypeScriptConverter
 
     private DestinationType GetDestinationType(in Type sourceType)
     {
-        if (_configuration.TypeMaps.TryGetValue(sourceType, out string? destType))
+        if (_configuration.TypeMaps.TryGetValue(sourceType.FullName!, out string? destType))
             return new DestinationType(destType, true, false, null);
 
         if (CustomMappedTypes.TryGetValue(sourceType, out OutputType? customType))

@@ -1,21 +1,17 @@
 ﻿using System.Globalization;
+using TypeContractor.TypeScript;
 
 namespace TypeContractor;
 
 public class TypeContractorConfiguration
 {
-    private const string DstString = "string";
-    private const string DstBool = "boolean";
-    private const string DstNumber = "number";
-    private const string DstByteArray = "number[]";
-
-    private readonly Dictionary<Type, string> _map = new();
+    private readonly Dictionary<string, string> _map = new();
     private readonly List<string> _suffixes = new();
     private readonly Dictionary<string, string> _assemblies = new();
     private readonly Dictionary<string, string> _replacements = new();
     private string? _outputPath;
 
-    public IReadOnlyDictionary<Type, string> TypeMaps => _map;
+    public IReadOnlyDictionary<string, string> TypeMaps => _map;
     public IReadOnlyList<string> Suffixes => _suffixes;
     public IReadOnlyDictionary<string, string> Assemblies => _assemblies;
     public IReadOnlyDictionary<string, string> Replacements => _replacements;
@@ -36,26 +32,62 @@ public class TypeContractorConfiguration
 
     public TypeContractorConfiguration AddDefaultTypeMaps()
     {
-        _map.Add(typeof(string), DstString);
-        _map.Add(typeof(DateTime), DstString);
-        _map.Add(typeof(DateTimeOffset), DstString);
-        _map.Add(typeof(Guid), DstString);
-        _map.Add(typeof(bool), DstBool);
-        _map.Add(typeof(byte), DstNumber);
-        _map.Add(typeof(short), DstNumber);
-        _map.Add(typeof(int), DstNumber);
-        _map.Add(typeof(long), DstNumber);
-        _map.Add(typeof(decimal), DstNumber);
-        _map.Add(typeof(float), DstNumber);
-        _map.Add(typeof(Stream), DstByteArray);
-        _map.Add(typeof(CultureInfo), DstString);
+        AddCustomMap(typeof(string), DestinationTypes.StringType);
+        AddCustomMap(typeof(DateTime), DestinationTypes.StringType);
+        AddCustomMap(typeof(DateTimeOffset), DestinationTypes.StringType);
+        AddCustomMap(typeof(Guid), DestinationTypes.StringType);
+        AddCustomMap(typeof(bool), DestinationTypes.Boolean);
+        AddCustomMap(typeof(byte), DestinationTypes.Number);
+        AddCustomMap(typeof(short), DestinationTypes.Number);
+        AddCustomMap(typeof(int), DestinationTypes.Number);
+        AddCustomMap(typeof(long), DestinationTypes.Number);
+        AddCustomMap(typeof(decimal), DestinationTypes.Number);
+        AddCustomMap(typeof(float), DestinationTypes.Number);
+        AddCustomMap(typeof(Stream), DestinationTypes.ByteArray);
+        AddCustomMap(typeof(CultureInfo), DestinationTypes.StringType);
 
         return this;
     }
 
+    /// <summary>
+    /// Add a custom mapping from a type.
+    /// 
+    /// <para>
+    /// A list of default destination types can be found in <see cref="DestinationTypes"/>
+    /// </para>
+    /// 
+    /// <para>
+    /// If the type isn't available at compile time, use <see cref="AddCustomMap(string, string)"/> instead.
+    /// </para>
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="destinationType"></param>
+    /// <returns>The configuration object for continued chaining</returns>
     public TypeContractorConfiguration AddCustomMap(Type type, string destinationType)
     {
         ArgumentNullException.ThrowIfNull(type, nameof(type));
+        return AddCustomMap(type.FullName!, destinationType);
+    }
+
+    /// <summary>
+    /// Add a custom mapping from a type, specified as a string.
+    /// 
+    /// <para>
+    /// A list of default destination types can be found in <see cref="DestinationTypes"/>
+    /// </para>
+    /// 
+    /// <para>
+    /// If the type is available at compile time, use <see cref="AddCustomMap(Type, string)"/> instead for improved
+    /// type safety and resilience against refactoring and renames.
+    /// </para>
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="destinationType"></param>
+    /// <returns>The configuration object for continued chaining</returns>
+    public TypeContractorConfiguration AddCustomMap(string type, string destinationType)
+    {
+        if (string.IsNullOrWhiteSpace(type))
+            throw new ArgumentNullException(nameof(type));
 
         if (!_map.TryAdd(type, destinationType))
             throw new InvalidOperationException($"Unable to add {type} to list of maps. Already added?");
