@@ -6,30 +6,30 @@ namespace TypeContractor;
 
 public class Contractor
 {
-    private readonly Configuration configuration;
+    private readonly TypeContractorConfiguration configuration;
 
-    public static Contractor WithConfiguration(Configuration configuration)
+    public static Contractor WithConfiguration(TypeContractorConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
         return new Contractor(configuration);
     }
 
-    public static Contractor FromDefaultConfiguration(Action<Configuration> configurationBuilder)
+    public static Contractor FromDefaultConfiguration(Action<TypeContractorConfiguration> configurationBuilder)
     {
         ArgumentNullException.ThrowIfNull(configurationBuilder, nameof(configurationBuilder));
 
-        var configuration = Configuration.WithDefaultConfiguration();
+        var configuration = TypeContractorConfiguration.WithDefaultConfiguration();
         configurationBuilder(configuration);
 
         return new Contractor(configuration);
     }
 
-    private Contractor(Configuration configuration)
+    private Contractor(TypeContractorConfiguration configuration)
     {
         this.configuration = configuration;
     }
 
-    public Configuration Configuration => configuration;
+    public TypeContractorConfiguration Configuration => configuration;
 
     public void Build()
     {

@@ -7,9 +7,9 @@ namespace TypeContractor.TypeScript;
 
 public class TypeScriptConverter
 {
-    private readonly Configuration _configuration;
+    private readonly TypeContractorConfiguration _configuration;
 
-    public TypeScriptConverter(Configuration configuration)
+    public TypeScriptConverter(TypeContractorConfiguration configuration)
     {
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
     }

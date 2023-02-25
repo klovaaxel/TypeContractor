@@ -2,7 +2,7 @@
 
 public record ContractedType(string Name, string FullName, Type Type, Folder Folder)
 {
-    public static ContractedType FromName(string name, Type type, Configuration configuration)
+    public static ContractedType FromName(string name, Type type, TypeContractorConfiguration configuration)
     {
         if (configuration is null) throw new ArgumentNullException(nameof(configuration));
 
