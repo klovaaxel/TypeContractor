@@ -6,5 +6,6 @@
         public Permissions OwnerPermissions { get; set; }
         public Permissions GroupPermissions { get; set; }
         public Permissions WorldPermissions { get; set; }
+        public CustomClass Custom { get; set; }
     }
 }
