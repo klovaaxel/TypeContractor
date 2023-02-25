@@ -9,13 +9,11 @@ namespace TypeContractor.Helpers
             var targetPath = targetTypeName
                 .Replace('.', Path.DirectorySeparatorChar)
                 .Split(Path.DirectorySeparatorChar)
-                .Take(..^1)
                 .ToList();
 
             var relativePath = relativeToTypeName
                 .Replace('.', Path.DirectorySeparatorChar)
                 .Split(Path.DirectorySeparatorChar)
-                .Take(..^1)
                 .ToList();
 
             if (targetPath.SequenceEqual(relativePath))
@@ -62,7 +60,7 @@ namespace TypeContractor.Helpers
             }
 
             // Add on the folders
-            for (index = lastCommonRoot + 1; index < absDirs.Length - 1; index++)
+            for (index = lastCommonRoot + 1; index <= absDirs.Length - 1; index++)
             {
                 relativePath.Append(absDirs[index] + "/");
             }

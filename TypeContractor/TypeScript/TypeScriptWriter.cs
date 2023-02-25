@@ -55,7 +55,7 @@ public class TypeScriptWriter
             if (importedType is null)
                 throw new ArgumentException($"Unable to find type for {import.SourceType}");
 
-            var relativePath = PathHelpers.RelativePath(importedType.FullName, type.FullName);
+            var relativePath = PathHelpers.RelativePath(importedType.ContractedType.Folder.Name, type.ContractedType.Folder.Name);
             var importPath = $"{relativePath}/{importedType.Name}".Replace("//", "/", StringComparison.InvariantCultureIgnoreCase);
 
             _builder.AppendLine(CultureInfo.InvariantCulture, $"import {{ {import.DestinationType} }} from \"{importPath}\";");
