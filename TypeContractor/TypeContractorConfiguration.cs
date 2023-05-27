@@ -1,18 +1,21 @@
-﻿using System.Globalization;
+using System.Globalization;
+using System.Reflection;
 using TypeContractor.TypeScript;
 
 namespace TypeContractor;
 
 public class TypeContractorConfiguration
 {
-    private readonly Dictionary<string, string> _map = new();
     private readonly List<string> _suffixes = new();
+    private readonly List<string> _types = new();
+    private readonly Dictionary<string, string> _map = new();
     private readonly Dictionary<string, string> _assemblies = new();
     private readonly Dictionary<string, string> _replacements = new();
     private string? _outputPath;
 
     public IReadOnlyDictionary<string, string> TypeMaps => _map;
-    public IReadOnlyList<string> Suffixes => _suffixes;
+    public IReadOnlyList<string> Suffixes => _suffixes.AsReadOnly();
+    public IReadOnlyList<string> Types => _types.AsReadOnly();
     public IReadOnlyDictionary<string, string> Assemblies => _assemblies;
     public IReadOnlyDictionary<string, string> Replacements => _replacements;
     public string OutputPath => _outputPath ?? throw new InvalidOperationException("Output path is not configured");
@@ -130,6 +133,28 @@ public class TypeContractorConfiguration
     public TypeContractorConfiguration AddSuffix(params string[] suffixes)
     {
         _suffixes.AddRange(suffixes);
+        return this;
+    }
+
+    /// <summary>
+    /// Add a list of types to explicitly include.
+    /// 
+    /// <para>
+    /// Instead of automatically matching classes based on their suffix,
+    /// it's possible to add certain types that should always be included.
+    /// </para>
+    /// 
+    /// <para>
+    /// Needs to be an exact match, similar to <c>typeof(T).FullName</c>,
+    /// before replacements (see <see cref="AddReplacement(string, string)"/>)
+    /// are applied.
+    /// </para>
+    /// </summary>
+    /// <param name="types">A list of types to include</param>
+    /// <returns>The configuration for further chaining</returns>
+    public TypeContractorConfiguration AddTypes(params string[] types)
+    {
+        _types.AddRange(types);
         return this;
     }
 

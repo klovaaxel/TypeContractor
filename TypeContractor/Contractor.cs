@@ -47,7 +47,7 @@ public class Contractor
             var assembly = Assembly.LoadFrom(assemblyPath);
 
             var types = assembly.GetTypes()
-                .Where(t => _configuration.Suffixes.Any(suffix => t.Name.EndsWith(suffix, StringComparison.InvariantCultureIgnoreCase)))
+                .Where(t => _configuration.Types.Any(type => type == t.FullName) || _configuration.Suffixes.Any(suffix => t.Name.EndsWith(suffix, StringComparison.InvariantCultureIgnoreCase)))
                 .Select(t => ContractedType.FromName(t.FullName!, t, _configuration))
                 .ToList();
 
