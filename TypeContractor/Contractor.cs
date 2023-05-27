@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using TypeContractor.Output;
 using TypeContractor.TypeScript;
 
@@ -6,7 +6,7 @@ namespace TypeContractor;
 
 public class Contractor
 {
-    private readonly TypeContractorConfiguration configuration;
+    private readonly TypeContractorConfiguration _configuration;
 
     public static Contractor WithConfiguration(TypeContractorConfiguration configuration)
     {
@@ -33,22 +33,22 @@ public class Contractor
 
     private Contractor(TypeContractorConfiguration configuration)
     {
-        this.configuration = configuration;
+        _configuration = configuration;
     }
 
-    public TypeContractorConfiguration Configuration => configuration;
+    public TypeContractorConfiguration Configuration => _configuration;
 
     public void Build()
     {
         var toConvert = new List<ContractedType>();
 
-        foreach (var (assemblyName, assemblyPath) in configuration.Assemblies)
+        foreach (var (assemblyName, assemblyPath) in _configuration.Assemblies)
         {
             var assembly = Assembly.LoadFrom(assemblyPath);
 
             var types = assembly.GetTypes()
-                .Where(t => configuration.Suffixes.Any(suffix => t.Name.EndsWith(suffix, StringComparison.InvariantCultureIgnoreCase)))
-                .Select(t => ContractedType.FromName(t.FullName!, t, configuration))
+                .Where(t => _configuration.Suffixes.Any(suffix => t.Name.EndsWith(suffix, StringComparison.InvariantCultureIgnoreCase)))
+                .Select(t => ContractedType.FromName(t.FullName!, t, _configuration))
                 .ToList();
 
             var folders = types
@@ -65,8 +65,8 @@ public class Contractor
                 toConvert.AddRange(items);
             }
 
-            var converter = new TypeScriptConverter(configuration);
-            var writer = new TypeScriptWriter(configuration.OutputPath);
+            var converter = new TypeScriptConverter(_configuration);
+            var writer = new TypeScriptWriter(_configuration.OutputPath);
 
             var outputTypes = types
                 .Select(converter.Convert)

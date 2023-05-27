@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using TypeContractor.Helpers;
 using TypeContractor.Output;
@@ -108,6 +108,6 @@ public class TypeScriptConverter
         CustomMappedTypes.Add(sourceType, outputType);
         return new DestinationType(outputType.Name, false, false, null);
 
-        //throw new ArgumentException($"Unexpected type: {sourceType}");
+        // throw new ArgumentException($"Unexpected type: {sourceType}");
     }
 }
