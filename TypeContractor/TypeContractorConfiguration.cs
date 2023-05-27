@@ -166,6 +166,14 @@ public class TypeContractorConfiguration
         return this;
     }
 
+    public TypeContractorConfiguration AddAssemblies(params Assembly[] assemblies)
+    {
+        foreach (var assembly in assemblies)
+            AddAssembly(assembly.FullName!, assembly.Location);
+
+        return this;
+    }
+
     public TypeContractorConfiguration AddReplacement(string searchString, string replacement)
     {
         if (!_replacements.TryAdd(searchString, replacement))
