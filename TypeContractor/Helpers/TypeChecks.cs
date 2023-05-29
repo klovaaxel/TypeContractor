@@ -19,4 +19,15 @@ internal static class TypeChecks
 
         return false;
     }
+
+    public static Type GetGenericType(Type sourceType)
+    {
+        if (!sourceType.GenericTypeArguments.Any() && sourceType.BaseType is not null)
+            return GetGenericType(sourceType.BaseType);
+
+        if (!sourceType.GenericTypeArguments.Any())
+            throw new InvalidOperationException($"Expected {sourceType.FullName} to have a generic type argument, but unable to find any.");
+
+        return sourceType.GenericTypeArguments.First();
+    }
 }

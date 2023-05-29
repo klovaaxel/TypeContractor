@@ -38,7 +38,7 @@ public class TypeScriptConverter
     }
 
     private ICollection<OutputEnumMember> GetEnumProperties(Type type)
-            {
+    {
         var matchAssembly = _metadataLoadContext.LoadFromAssemblyName(type.Assembly.FullName!);
         var matchedEnumType = matchAssembly.GetType(type.FullName!)!;
 
@@ -95,7 +95,8 @@ public class TypeScriptConverter
 
         if (TypeChecks.ImplementsIEnumerable(sourceType))
         {
-            var innerType = sourceType.GenericTypeArguments.First();
+            var innerType = TypeChecks.GetGenericType(sourceType);
+
             var (TypeName, IsBuiltin, _, _) = GetDestinationType(innerType);
             return new DestinationType(TypeName, IsBuiltin, true, innerType);
         }

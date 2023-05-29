@@ -98,7 +98,7 @@ public class TypeScriptWriter
     {
         var sourceType = import.SourceType;
         if (TypeChecks.ImplementsIEnumerable(import.SourceType) || TypeChecks.IsNullable(import.SourceType))
-            sourceType = sourceType.GenericTypeArguments.First();
+            sourceType = TypeChecks.GetGenericType(sourceType);
 
         return allTypes.FirstOrDefault(x => x.FullName == sourceType.FullName);
     }

@@ -1,4 +1,5 @@
-﻿using TypeContractor.Helpers;
+using Newtonsoft.Json;
+using TypeContractor.Helpers;
 
 namespace TypeContractor.Tests.Helpers
 {
@@ -49,6 +50,7 @@ namespace TypeContractor.Tests.Helpers
         [InlineData(typeof(string[]))]
         [InlineData(typeof(byte[]))]
         [InlineData(typeof(CustomListWrapper))]
+        [InlineData(typeof(ComplexListWrapper))]
         public void ImplementsIEnumerable_Is_True_For_Targets(Type target)
         {
             TypeChecks.ImplementsIEnumerable(target).Should().BeTrue();
@@ -78,5 +80,18 @@ namespace TypeContractor.Tests.Helpers
     internal class CustomCollection
     {
         public IEnumerable<string>? Items { get; set; }
+    }
+
+    internal class ComplexListWrapper : List<ComplexNestedType>
+    { }
+
+    internal class ComplexNestedType
+    {
+        public int ErrorCode { get; set; }
+        public Guid ErrorScopeId { get; set; }
+        public string Message { get; set; }
+        public string Reference { get; set; } = "";
+        public Guid SequentialId { get; set; }
+        public string SourceHint { get; set; }
     }
 }
