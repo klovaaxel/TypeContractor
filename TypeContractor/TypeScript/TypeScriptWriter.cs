@@ -51,10 +51,7 @@ public class TypeScriptWriter
 
         foreach (var import in imports)
         {
-            var importedType = GetImportedType(allTypes, import);
-            if (importedType is null)
-                throw new ArgumentException($"Unable to find type for {import.SourceType}");
-
+            var importedType = GetImportedType(allTypes, import) ?? throw new ArgumentException($"Unable to find type for {import.SourceType}");
             var relativePath = PathHelpers.RelativePath(importedType.ContractedType.Folder.Name, type.ContractedType.Folder.Name);
             var importPath = $"{relativePath}/{importedType.Name}".Replace("//", "/", StringComparison.InvariantCultureIgnoreCase);
 

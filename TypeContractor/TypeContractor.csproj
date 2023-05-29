@@ -6,4 +6,7 @@
 		<AnalysisLevel>latest-Recommended</AnalysisLevel>
 		<CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
 	</PropertyGroup>
+	<ItemGroup>
+	  <PackageReference Include="System.Reflection.MetadataLoadContext" Version="6.0.0" />
+	</ItemGroup>
 </Project>

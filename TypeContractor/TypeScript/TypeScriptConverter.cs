@@ -1,5 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
+using System.Reflection;
 using TypeContractor.Helpers;
 using TypeContractor.Output;
 
@@ -8,10 +7,12 @@ namespace TypeContractor.TypeScript;
 public class TypeScriptConverter
 {
     private readonly TypeContractorConfiguration _configuration;
+    private readonly MetadataLoadContext _metadataLoadContext;
 
-    public TypeScriptConverter(TypeContractorConfiguration configuration)
+    public TypeScriptConverter(TypeContractorConfiguration configuration, MetadataLoadContext metadataLoadContext)
     {
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        _metadataLoadContext = metadataLoadContext ?? throw new ArgumentNullException(nameof(metadataLoadContext));
     }
 
     public Dictionary<Type, OutputType> CustomMappedTypes { get; } = new();
@@ -36,24 +37,25 @@ public class TypeScriptConverter
         );
     }
 
-    private static ICollection<OutputEnumMember> GetEnumProperties(Type type) =>
-        type
-            .GetEnumNames()
-            .Select(name =>
+    private ICollection<OutputEnumMember> GetEnumProperties(Type type)
             {
-                var value = Enum.Parse(type, name);
-                var numericValue = type.GetField("value__")!.GetValue(value);
+        var matchAssembly = _metadataLoadContext.LoadFromAssemblyName(type.Assembly.FullName!);
+        var matchedEnumType = matchAssembly.GetType(type.FullName!)!;
 
-                return new OutputEnumMember(name, value, name, numericValue!);
-            })
+        var underlyingValues = matchedEnumType.GetEnumValuesAsUnderlyingType();
+
+        return matchedEnumType
+            .GetEnumNames()
+            .Select((name, idx) => new OutputEnumMember(name, name, underlyingValues.GetValue(idx)!))
             .ToList();
+    }
 
     private ICollection<OutputProperty> GetProperties(Type type)
     {
         var outputProperties = new List<OutputProperty>();
 
         // Find all properties
-        var properties = type.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+        var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
         // Evaluate type of property
         foreach (var property in properties)
