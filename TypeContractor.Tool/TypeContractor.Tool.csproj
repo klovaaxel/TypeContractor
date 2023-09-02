@@ -7,9 +7,13 @@
 		<Nullable>enable</Nullable>
 		
 		<PackAsTool>true</PackAsTool>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageId>TypeContractor</PackageId>
-		<Authors>Hogia HR Systems</Authors>
-		<Description>Provide TypeContractor as .NET tool</Description>
+		<Authors>Per Christian B. Viken</Authors>
+		<Description>
+			Provides a dotnet tool for generating TypeScript
+			definitions from an ASP.NET Core API.
+		</Description>
 		<PackageTags>dotnet-tool TypeContractor TypeScript generator</PackageTags>
 		<ToolCommandName>typecontractor</ToolCommandName>
 		<PackageOutputPath>./nupkg</PackageOutputPath>
