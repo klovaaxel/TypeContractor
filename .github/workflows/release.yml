@@ -15,7 +15,6 @@ jobs:
   build:
 
     env:
-      BUILD_CONFIG: 'Release'
       SOLUTION: 'TypeContractor.sln'
 
     runs-on: ubuntu-latest
@@ -36,20 +35,23 @@ jobs:
       with:
         nuget-api-key: ${{secrets.NUGET_API_KEY}}
 
-    - name: Restore dependencies
-      run: nuget restore $SOLUTION
-
-    - name: Setup .NET
+    - name: Setup dotnet
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.x
 
+    - name: Display dotnet version
+      run: dotnet --version
+
+    - name: Restore dependencies
+      run: dotnet restore
+
     - name: Build
-      run: dotnet build $SOLUTION --configuration $BUILD_CONFIG -p:Version=$BUILD_VERSION --no-restore
+      run: dotnet build $SOLUTION --configuration Release -p:Version=$BUILD_VERSION --no-restore
 
     - name: Run tests
       run: dotnet test /p:Configuration=$BUILD_CONFIG --no-restore --no-build --verbosity normal
       
     - name: Publish
       if: startsWith(github.ref, 'refs/heads/release')
-      run: nuget push **\*.nupkg -Source 'https://api.nuget.org/v3/index.json' -ApiKey ${{secrets.NUGET_API_KEY}}
+      run: dotnet nuget push **\*.nupkg -s 'https://api.nuget.org/v3/index.json' --api-key ${{secrets.NUGET_API_KEY}}
