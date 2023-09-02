@@ -9,6 +9,8 @@
 		<PackAsTool>true</PackAsTool>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageId>TypeContractor</PackageId>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<Authors>Per Christian B. Viken</Authors>
 		<Description>
 			Provides a dotnet tool for generating TypeScript
@@ -27,4 +29,8 @@
 	  <ProjectReference Include="..\TypeContractor\TypeContractor.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<None Include="..\LICENSE" Pack="true" PackagePath="\" />
+		<None Include="..\README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
 </Project>
