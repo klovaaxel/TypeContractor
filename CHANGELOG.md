@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.7.0] - 2023-09-17
+
 ### Added
 
 - Add support for `readonly` output properties (#1)
@@ -101,7 +103,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release
 
 
-[unreleased]: https://github.com/PerfectlyNormal/TypeContractor/compare/v0.6.0...HEAD
+[unreleased]: https://github.com/PerfectlyNormal/TypeContractor/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/PerfectlyNormal/TypeContractor/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/PerfectlyNormal/TypeContractor/compare/v0.5.1...v0.6.0
 [0.5.1]: https://github.com/PerfectlyNormal/TypeContractor/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/PerfectlyNormal/TypeContractor/compare/v0.4.0...v0.5.0
