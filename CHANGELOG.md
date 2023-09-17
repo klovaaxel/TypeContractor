@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+### Added
+
+- Add support for `readonly` output properties (#1)
+
 ### Fixed
 
 - Properly handle `IEnumerable<T>` as values in a Dictionary (#2)

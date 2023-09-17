@@ -167,6 +167,24 @@ public class TypeScriptConverterTests
         prop.IsBuiltin.Should().BeTrue();
     }
 
+    [Theory]
+    [InlineData(0, "success", "boolean", true)]
+    [InlineData(1, "created", "string", true)]
+    [InlineData(2, "errors", "string[]", false)]
+    [InlineData(3, "warnings", "{ [key: string]: string[] }", true)]
+    public void Adds_Readonly_Modifier(int index, string destinationName, string destinationType, bool isReadonly)
+    {
+        var result = Sut.Convert(typeof(ReadonlyResponse));
+
+        result.Should().NotBeNull();
+        result.Properties.Should().HaveCount(4);
+
+        var prop = result.Properties!.ElementAt(index);
+        prop.DestinationName.Should().Be(destinationName);
+        prop.FullDestinationType.Should().Be(destinationType);
+        prop.IsReadonly.Should().Be(isReadonly);
+    }
+
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private class SimpleTypes
     {
@@ -224,6 +242,14 @@ public class TypeScriptConverterTests
     private class DynamicResponse
     {
         public dynamic Result { get; set; }
+    }
+
+    private class ReadonlyResponse
+    {
+        public bool Success => !Errors.Any();
+        public DateTime Created { get; }
+        public IEnumerable<string> Errors { get; set; }
+        public Dictionary<string, IEnumerable<string>> Warnings { get; }
     }
 
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

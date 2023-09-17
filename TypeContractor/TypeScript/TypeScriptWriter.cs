@@ -102,7 +102,8 @@ public class TypeScriptWriter
         {
             var nullable = property.IsNullable ? "?" : "";
             var array = property.IsArray ? "[]" : "";
-            _builder.AppendFormat(CultureInfo.InvariantCulture, "  {0}{1}: {2}{3};\r\n", property.DestinationName, nullable, property.DestinationType, array);
+            var isReadonly = property.IsReadonly ? "readonly " : "";
+            _builder.AppendFormat(CultureInfo.InvariantCulture, "  {4}{0}{1}: {2}{3};\r\n", property.DestinationName, nullable, property.DestinationType, array, isReadonly);
         }
 
         foreach (var member in type.EnumMembers ?? Enumerable.Empty<OutputEnumMember>())
