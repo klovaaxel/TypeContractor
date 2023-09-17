@@ -102,7 +102,7 @@ public class TypeScriptConverter
 
             var isBuiltin = keyType.IsBuiltin && valueDestinationType.IsBuiltin;
 
-            return new DestinationType($"{{ [key: {keyType.TypeName}]: {valueDestinationType.TypeName} }}", isBuiltin, false, valueType, valueDestinationType.TypeName);
+            return new DestinationType($"{{ [key: {keyType.TypeName}]: {valueDestinationType.FullTypeName} }}", isBuiltin, false, valueType, valueDestinationType.TypeName);
         }
 
         if (TypeChecks.ImplementsIEnumerable(sourceType))
@@ -119,7 +119,7 @@ public class TypeScriptConverter
             var argumentDestinationTypes = arguments.Select(arg => GetDestinationType(arg, customAttributes));
             var isBuiltin = argumentDestinationTypes.All(arg => arg.IsBuiltin);
 
-            var argumentList = argumentDestinationTypes.Select((arg, idx) => $"item{idx+1}: {arg.TypeName}{(arg.IsArray ? "[]" : "")}");
+            var argumentList = argumentDestinationTypes.Select((arg, idx) => $"item{idx+1}: {arg.FullTypeName}");
             var typeName = $"{{ {string.Join(", ", argumentList)} }}";
 
             return new DestinationType(typeName, isBuiltin, false, null);

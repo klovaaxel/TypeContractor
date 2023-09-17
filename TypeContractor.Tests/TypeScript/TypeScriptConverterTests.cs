@@ -124,10 +124,22 @@ public class TypeScriptConverterTests
         var result = Sut.Convert(typeof(ComplexDictionaryResponse));
 
         result.Should().NotBeNull();
-        result.Properties.Should().ContainSingle();
+        result.Properties.Should().HaveCount(2);
         var prop = result.Properties!.First();
         prop.DestinationName.Should().Be("migrationWarnings");
         prop.DestinationType.Should().Be("{ [key: string]: { item1: string[], item2: string[] } }");
+    }
+
+    [Fact]
+    public void Handles_Dictionary_With_Enumerable_Value()
+    {
+        var result = Sut.Convert(typeof(ComplexDictionaryResponse));
+
+        result.Should().NotBeNull();
+        result.Properties.Should().HaveCount(2);
+        var prop = result.Properties!.Last();
+        prop.DestinationName.Should().Be("messages");
+        prop.DestinationType.Should().Be("{ [key: string]: string[] }");
     }
 
     [Fact]
@@ -201,6 +213,7 @@ public class TypeScriptConverterTests
     private class ComplexDictionaryResponse
     {
         public Dictionary<string, (List<string> Errors, List<string> Warnings)> MigrationWarnings { get; set; }
+        public Dictionary<Guid, IEnumerable<string>> Messages { get; set; }
     }
 
     private class ValueTupleResponse
