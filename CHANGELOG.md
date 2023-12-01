@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update xunit to v2.6.1
 - Update xunit.runner.visualstudio to v2.5.3
 - Update xunit.analyzers to v1.4.0
+- Fix compiler warnings
 
 ## [0.7.0] - 2023-09-17
 
