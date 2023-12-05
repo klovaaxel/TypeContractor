@@ -81,8 +81,16 @@ public class Contractor
 
             foreach (var type in outputTypes)
             {
-                var filePath = writer.Write(type, outputTypes);
-                generatedFiles.Add(filePath);
+                try
+                {
+                    var filePath = writer.Write(type, outputTypes);
+                    generatedFiles.Add(filePath);
+                }
+                catch (TypeScriptImportException ex)
+                {
+                    _configuration.Logger.LogError(ex, $"Unable to generate typings for {type.Name} ({type.FullName})");
+                    returnCode = 1;
+                }
             }
         }
 
