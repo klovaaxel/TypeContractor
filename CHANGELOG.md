@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+### Added
+
+- Tool exits with code 0 when everything is okay and 1 when something has gone wrong
+
 ### Fixed
 
 - Log an error and continue when we fail to convert a file

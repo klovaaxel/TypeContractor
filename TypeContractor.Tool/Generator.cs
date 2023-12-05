@@ -27,8 +27,10 @@ internal class Generator
         _logger = logger;
     }
 
-    public Task Execute()
+    public Task<int> Execute()
     {
+        var returnCode = 0;
+
         MetadataLoadContext context;
         try
         {
@@ -37,7 +39,7 @@ internal class Generator
         catch (FileNotFoundException ex)
         {
             _logger.LogError(ex, ex.Message);
-            return Task.CompletedTask;
+            return Task.FromResult(1);
         }
 
         var assembly = context.LoadFromAssemblyPath(_assemblyPath);
@@ -47,7 +49,7 @@ internal class Generator
         if (!controllers.Any())
         {
             _logger.LogError("Unable to find any controllers.");
-            return Task.CompletedTask;
+            return Task.FromResult(1);
         }
 
         var typesToLoad = new Dictionary<Assembly, HashSet<Type>>();
@@ -83,7 +85,7 @@ internal class Generator
         if (!typesToLoad.Any())
         {
             _logger.LogWarning("Unable to find any types to convert that matches the expected format.");
-            return Task.CompletedTask;
+            return Task.FromResult(1);
         }
 
         var contractor = GenerateContractor(typesToLoad);
@@ -99,10 +101,10 @@ internal class Generator
         }
 
         _logger.LogMessage("Writing types.");
-        contractor.Build(context, _cleanMethod == CleanMethod.Smart);
+        returnCode = contractor.Build(context, _cleanMethod == CleanMethod.Smart);
         _logger.LogMessage("Finished generating types.");
 
-        return Task.CompletedTask;
+        return Task.FromResult(returnCode);
     }
 
     private Contractor GenerateContractor(Dictionary<Assembly, HashSet<Type>> typesToLoad)

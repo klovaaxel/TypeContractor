@@ -1,6 +1,8 @@
 using System.CommandLine;
 using TypeContractor.Tool;
 
+int returnCode = 0;
+
 var rootCommand = new RootCommand("Tool for generating TypeScript definitions from C# code");
 var assemblyOption = new Option<string>("--assembly", "Path to the assembly to start with. Will be relative to the current directory");
 var outputOption = new Option<string>("--output", "Output path to write to. Will be relative to the current directory");
@@ -26,7 +28,9 @@ rootCommand.SetHandler(async (string assemblyOption, string output, CleanMethod 
 {
     var logger = new Logger(logLevel);
     var generator = new Generator(assemblyOption, output, clean, replacements, strip, customMaps, packsPath, logger);
-    await generator.Execute();
+    returnCode = await generator.Execute();
 }, assemblyOption, outputOption, cleanOption, replaceOptions, stripOptions, mapOptions, packsOptions, logLevelOptions);
 
 await rootCommand.InvokeAsync(args);
+
+return returnCode;
