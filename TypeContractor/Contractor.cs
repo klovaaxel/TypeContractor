@@ -39,8 +39,10 @@ public class Contractor
 
     public TypeContractorConfiguration Configuration => _configuration;
 
-    public void Build(MetadataLoadContext? metadataLoadContext = null, bool smartClean = false)
+    public int Build(MetadataLoadContext? metadataLoadContext = null, bool smartClean = false)
     {
+        var returnCode = 0;
+
         metadataLoadContext ??= BuildMetadataLoadContext();
         var toConvert = new List<ContractedType>();
         var generatedFiles = new List<string>();
@@ -124,6 +126,8 @@ public class Contractor
                 }
             }
         }
+
+        return returnCode;
     }
 
     private MetadataLoadContext BuildMetadataLoadContext()
