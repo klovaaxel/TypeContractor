@@ -71,6 +71,8 @@ public class TypeContractorConfiguration
         AddCustomMap(typeof(long), DestinationTypes.Number);
         AddCustomMap(typeof(decimal), DestinationTypes.Number);
         AddCustomMap(typeof(float), DestinationTypes.Number);
+        AddCustomMap(typeof(double), DestinationTypes.Number);
+        AddCustomMap(typeof(TimeSpan), DestinationTypes.StringType);
         AddCustomMap(typeof(Stream), DestinationTypes.ByteArray);
         AddCustomMap(typeof(CultureInfo), DestinationTypes.StringType);
 

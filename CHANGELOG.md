@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+### Fixed
+
+- Add default maps from `System.Double` to `number` and `System.TimeSpan` to `string` (#19)
+
 ## [0.8.0] - 2023-12-05
 
 ### Added
