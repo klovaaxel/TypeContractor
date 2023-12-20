@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Improve error logging if a type fails to convert (#20)
 - Update xunit to v2.6.4- Update xunit.runner.visualstudio to v2.5.6
 - Update xunit.analyzers to v1.8.0
 

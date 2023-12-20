@@ -3,7 +3,7 @@ using TypeContractor.Output;
 
 namespace TypeContractor.TypeScript;
 
-public class TypeScriptImportException : Exception
+internal class TypeScriptImportException : Exception
 {
     public TypeScriptImportException(string message) : base(message)
     {

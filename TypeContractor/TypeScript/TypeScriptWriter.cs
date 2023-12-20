@@ -57,7 +57,18 @@ public class TypeScriptWriter
         {
             var importedTypes = GetImportedTypes(allTypes, import);
             if (importedTypes.Count == 0)
-                throw new ArgumentException($"Unable to find type for {import.SourceType}");
+            {
+                var references = allTypes
+                    .Where(x => x.Properties is not null)
+                    .Select(x => new TypeScriptReference
+                    {
+                        Type = x,
+                        Properties = x.Properties!.Where(prop => prop.SourceType.FullName == type.FullName || prop.InnerSourceType?.FullName == type.FullName)
+                    })
+                    .Where(x => x.Properties.Any());
+
+                throw new TypeScriptReferenceException(type, import, references, new ArgumentException($"Unable to find type for {import.SourceType}"));
+            }
 
             foreach (var importedType in importedTypes)
             {
