@@ -86,9 +86,24 @@ public class Contractor
                     var filePath = writer.Write(type, outputTypes);
                     generatedFiles.Add(filePath);
                 }
+                catch (TypeScriptReferenceException ex)
+                {
+                    var references = ex.References
+                        .SelectMany(r => r.Properties.Select(x => $"\n- {r.Type.Name}.{x.SourceName} ({r.Type.FullName})"))
+                        .ToList();
+
+                    _configuration.Logger.LogError(ex, 
+                        $"Unable to generate typings for {type.Name} ({type.FullName}):\n" +
+                        $"{ex.Message}\n" +
+                        $"Full type of property: {ex.PropertyWithError.SourceType.FullName}\n\n" +
+                        $"{type.Name} is referenced by: {string.Join("", references)}\n");
+
+                    returnCode = 1;
+                }
                 catch (TypeScriptImportException ex)
                 {
                     _configuration.Logger.LogError(ex, $"Unable to generate typings for {type.Name} ({type.FullName})");
+
                     returnCode = 1;
                 }
             }
