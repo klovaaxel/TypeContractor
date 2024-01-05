@@ -33,7 +33,7 @@ public class TypeScriptConverterTests
         result.FullName.Should().Be("TypeContractor.Tests.TypeScript.TypeScriptConverterTests+SimpleTypes");
         result.IsEnum.Should().BeFalse();
         result.EnumMembers.Should().BeNull();
-        result.Properties.Should().HaveCount(5);
+        result.Properties.Should().HaveCount(6);
     }
 
     [Theory]
@@ -42,6 +42,7 @@ public class TypeScriptConverterTests
     [InlineData(2)]
     [InlineData(3)]
     [InlineData(4)]
+    [InlineData(5)]
     public void Converted_Simple_Properties_Looks_As_Expected(int propertyIndex)
     {
         var result = Sut.Convert(typeof(SimpleTypes));
@@ -104,6 +105,17 @@ public class TypeScriptConverterTests
                 prop.IsArray.Should().BeFalse();
                 prop.IsNullable.Should().BeFalse();
                 break;
+
+            case 5:
+                prop.SourceName.Should().Be("SomeObject");
+                prop.SourceType.Should().Be(typeof(object));
+                prop.InnerSourceType.Should().BeNull();
+                prop.DestinationName.Should().Be("someObject");
+                prop.DestinationType.Should().Be("any");
+                prop.IsBuiltin.Should().BeTrue();
+                prop.IsArray.Should().BeFalse();
+                prop.IsNullable.Should().BeFalse();
+                break;
         }
     }
 
@@ -123,13 +135,14 @@ public class TypeScriptConverterTests
         var result = Sut.Convert(typeof(NestedInheritanceTest));
 
         result.Properties.Should().NotBeNull();
-        result.Properties.Should().HaveCount(7);
+        result.Properties.Should().HaveCount(8);
         result.Properties.Should()
             .Contain(x => x.SourceName == "StringProperty")
             .And.Contain(x => x.SourceName == "NumberProperty")
             .And.Contain(x => x.SourceName == "NumbersProperty")
             .And.Contain(x => x.SourceName == "DoubleTime")
             .And.Contain(x => x.SourceName == "TimeyWimeySpan")
+            .And.Contain(x => x.SourceName == "SomeObject")
             .And.Contain(x => x.SourceName == "InheritedProperty")
             .And.Contain(x => x.SourceName == "FinalProperty");
     }
@@ -243,6 +256,7 @@ public class TypeScriptConverterTests
         public IEnumerable<int> NumbersProperty { get; set; }
         public double DoubleTime { get; set; }
         public TimeSpan TimeyWimeySpan { get; set; }
+        public object SomeObject { get; set; }
     }
 
     private class TypeVisibility

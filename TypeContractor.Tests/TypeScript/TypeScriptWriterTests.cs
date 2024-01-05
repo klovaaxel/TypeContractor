@@ -22,6 +22,36 @@ public class TypeScriptWriterTests : IDisposable
     }
 
     [Fact]
+    public void Can_Write_Simple_Types()
+    {
+        // Arrange
+        var types = new[] { typeof(SimpleTypes) }
+            .Select(t => ContractedType.FromName(t.FullName!, t, _configuration));
+
+        var outputTypes = types
+                .Select(_converter.Convert)
+                .ToList() // Needed so `converter.Convert` runs before we concat
+                .Concat(_converter.CustomMappedTypes.Values)
+                .ToList();
+
+        // Act
+        var result = Sut.Write(outputTypes.First(), outputTypes);
+
+        // Assert
+        var file = File.ReadAllLines(result).Select(x => x.TrimStart());
+        file.Should()
+            .NotBeEmpty()
+            .And.NotContainMatch("import * from")
+            .And.Contain("export interface SimpleTypes {")
+            .And.Contain("stringProperty: string;")
+            .And.Contain("numberProperty?: number;")
+            .And.Contain("numbersProperty: number[];")
+            .And.Contain("doubleTime: number;")
+            .And.Contain("timeyWimeySpan: string;")
+            .And.Contain("someObject: any;");
+    }
+
+    [Fact]
     public void Handles_Dictionary_With_Complex_Values()
     {
         // Arrange
@@ -71,6 +101,16 @@ public class TypeScriptWriterTests : IDisposable
 
     #region Test input
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    private class SimpleTypes
+    {
+        public string StringProperty { get; set; }
+        public int? NumberProperty { get; set; }
+        public IEnumerable<int> NumbersProperty { get; set; }
+        public double DoubleTime { get; set; }
+        public TimeSpan TimeyWimeySpan { get; set; }
+        public object SomeObject { get; set; }
+    }
+
     private class ComplexValueDictionary
     {
         public Dictionary<Guid, IEnumerable<FormulaDto>> Formulas { get; set; }

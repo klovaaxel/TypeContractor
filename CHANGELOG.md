@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+### Added
+
+- Add default map from `System.Object` to `any`
+
 ### Fixed
 
 - Fix writing dictionaries with custom types as values wrapped inside lists.
