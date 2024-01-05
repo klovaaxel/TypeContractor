@@ -169,6 +169,30 @@ public class TypeScriptConverterTests
     }
 
     [Fact]
+    public void Handles_Dictionary_With_Complex_Values()
+    {
+        var result = Sut.Convert(typeof(ComplexValueDictionary));
+
+        result.Should().NotBeNull();
+        result.Properties.Should().HaveCount(1);
+        var prop = result.Properties!.First();
+        prop.DestinationName.Should().Be("formulas");
+        prop.DestinationType.Should().Be("{ [key: string]: FormulaDto[] }");
+    }
+
+    [Fact]
+    public void Handles_Dictionary_With_Nested_Dictionary_Values()
+    {
+        var result = Sut.Convert(typeof(NestedValueDictionary));
+
+        result.Should().NotBeNull();
+        result.Properties.Should().HaveCount(1);
+        var prop = result.Properties!.First();
+        prop.DestinationName.Should().Be("formulas");
+        prop.DestinationType.Should().Be("{ [key: string]: { [key: string]: FormulaDto[] } }");
+    }
+
+    [Fact]
     public void Handles_Simple_ValueTuple_Types()
     {
         var result = Sut.Convert(typeof(ValueTupleResponse));
@@ -260,6 +284,23 @@ public class TypeScriptConverterTests
     {
         public Dictionary<string, (List<string> Errors, List<string> Warnings)> MigrationWarnings { get; set; }
         public Dictionary<Guid, IEnumerable<string>> Messages { get; set; }
+    }
+
+    private class ComplexValueDictionary
+    {
+        public Dictionary<Guid, IEnumerable<FormulaDto>> Formulas { get; set; }
+    }
+
+    private class NestedValueDictionary
+    {
+        public Dictionary<Guid, Dictionary<string, IEnumerable<FormulaDto>>> Formulas { get; set; }
+    }
+
+    private class FormulaDto
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string Definition { get; set; }
     }
 
     private class ValueTupleResponse

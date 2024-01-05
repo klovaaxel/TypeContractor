@@ -137,6 +137,8 @@ public class TypeScriptWriter
         {
             var keyType = TypeChecks.GetGenericType(sourceType, 0);
             var valueType = TypeChecks.GetGenericType(sourceType, 1);
+            while (TypeChecks.ImplementsIEnumerable(valueType))
+                valueType = TypeChecks.GetGenericType(valueType);
 
             return allTypes.Where(x => x.FullName == keyType.FullName || x.FullName == valueType.FullName).ToList();
         }
