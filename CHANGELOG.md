@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+### Changed
+
+- Update xunit to v2.6.5
+
 ## [0.8.1] - 2023-12-24
 
 ### Fixed
@@ -132,7 +136,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Initial release
-
 
 [unreleased]: https://github.com/PerfectlyNormal/TypeContractor/compare/v0.8.1...HEAD
 [0.8.1]: https://github.com/PerfectlyNormal/TypeContractor/compare/v0.8.0...v0.8.1
