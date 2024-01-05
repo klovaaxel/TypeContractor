@@ -13,9 +13,10 @@ internal class Generator
     private readonly string[] _strip;
     private readonly string[] _customMaps;
     private readonly string _packPath;
+    private readonly int _dotnetVersion;
     private readonly ILog _logger;
 
-    public Generator(string assemblyPath, string output, CleanMethod cleanMethod, string[] replacements, string[] strip, string[] customMaps, string packsPath, ILog logger)
+    public Generator(string assemblyPath, string output, CleanMethod cleanMethod, string[] replacements, string[] strip, string[] customMaps, string packsPath, int dotnetVersion, ILog logger)
     {
         _assemblyPath = assemblyPath;
         _output = output;
@@ -24,6 +25,7 @@ internal class Generator
         _strip = strip;
         _customMaps = customMaps;
         _packPath = packsPath;
+        _dotnetVersion = dotnetVersion;
         _logger = logger;
     }
 
@@ -34,7 +36,7 @@ internal class Generator
         MetadataLoadContext context;
         try
         {
-            context = ReflectionContextHelper.GetMetadataContext(_packPath, _assemblyPath, _logger);
+            context = ReflectionContextHelper.GetMetadataContext(_packPath, _dotnetVersion, _assemblyPath, _logger);
         }
         catch (FileNotFoundException ex)
         {

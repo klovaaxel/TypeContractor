@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Tool and library built using .NET8 (#14)
+- Add `--dotnet-version` option to set the dotnet version used for finding
+  framework DLLs. Defaults to 8.
 
 ### Changed
 
