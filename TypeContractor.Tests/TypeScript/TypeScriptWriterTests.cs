@@ -45,11 +45,40 @@ public class TypeScriptWriterTests : IDisposable
             .And.Contain("formulas: { [key: string]: FormulaDto[] };");
     }
 
+    [Fact]
+    public void Handles_Dictionary_With_Nested_Dictionary_Values()
+    {
+        // Arrange
+        var types = new[] { typeof(NestedValueDictionary) }
+            .Select(t => ContractedType.FromName(t.FullName!, t, _configuration));
+
+        var outputTypes = types
+                .Select(_converter.Convert)
+                .ToList() // Needed so `converter.Convert` runs before we concat
+                .Concat(_converter.CustomMappedTypes.Values)
+                .ToList();
+
+        // Act
+        var result = Sut.Write(outputTypes.First(), outputTypes);
+
+        // Assert
+        var file = File.ReadAllText(result);
+        file.Should()
+            .NotBeEmpty()
+            .And.Contain("import { FormulaDto } from \"./FormulaDto\";")
+            .And.Contain("formulas: { [key: string]: { [key: string]: FormulaDto[] } };");
+    }
+
     #region Test input
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private class ComplexValueDictionary
     {
         public Dictionary<Guid, IEnumerable<FormulaDto>> Formulas { get; set; }
+    }
+
+    private class NestedValueDictionary
+    {
+        public Dictionary<Guid, Dictionary<string, IEnumerable<FormulaDto>>> Formulas { get; set; }
     }
 
     private class FormulaDto

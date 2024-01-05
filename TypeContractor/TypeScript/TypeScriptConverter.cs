@@ -106,7 +106,7 @@ public class TypeScriptConverter
 
             var isBuiltin = keyType.IsBuiltin && valueDestinationType.IsBuiltin;
 
-            return new DestinationType($"{{ [key: {keyType.TypeName}]: {valueDestinationType.FullTypeName} }}", isBuiltin, false, isReadonly, valueType, valueDestinationType.TypeName);
+            return new DestinationType($"{{ [key: {keyType.TypeName}]: {valueDestinationType.FullTypeName} }}", isBuiltin, false, isReadonly, valueType, valueDestinationType.ImportType);
         }
 
         if (TypeChecks.ImplementsIEnumerable(sourceType))

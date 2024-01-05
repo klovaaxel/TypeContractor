@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix writing dictionaries with custom types as values wrapped inside lists.
   E.g. converting `Dictionary<Guid, IEnumerable<FormulaDto>>` to
   `{ [key: string]: FormulaDto[] }`
+- Fix writing dictionaries wrapped inside other dictionaries, e.g. making sure
+  `Dictionary<Guid, Dictionary<string, IEnumerable<FormulaDto>>>` correctly
+  translates to `{ [key: string]: { [key: string]: FormulaDto[] } }`.
 
 ## [0.9.0] - 2024-01-05
 
