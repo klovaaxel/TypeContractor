@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<AnalysisLevel>latest-recommended</AnalysisLevel>
@@ -8,6 +8,6 @@
 		<PackageId>TypeContractor.Lib</PackageId>
 	</PropertyGroup>
 	<ItemGroup>
-	  <PackageReference Include="System.Reflection.MetadataLoadContext" Version="6.0.0" />
+	  <PackageReference Include="System.Reflection.MetadataLoadContext" Version="8.0.0" />
 	</ItemGroup>
 </Project>
