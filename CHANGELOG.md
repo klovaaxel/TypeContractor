@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+### Added
+
+- Tool and library built using .NET8 (#14)
+
 ### Changed
 
 - Update xunit to v2.6.5
