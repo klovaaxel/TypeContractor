@@ -60,6 +60,7 @@ public class TypeContractorConfiguration
     /// <returns>The configuration object for continued chaining</returns>
     public TypeContractorConfiguration AddDefaultTypeMaps()
     {
+        AddCustomMap(typeof(object), DestinationTypes.AnyType);
         AddCustomMap(typeof(string), DestinationTypes.StringType);
         AddCustomMap(typeof(DateTime), DestinationTypes.StringType);
         AddCustomMap(typeof(DateTimeOffset), DestinationTypes.StringType);

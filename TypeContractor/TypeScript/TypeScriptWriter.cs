@@ -137,6 +137,19 @@ public class TypeScriptWriter
         {
             var keyType = TypeChecks.GetGenericType(sourceType, 0);
             var valueType = TypeChecks.GetGenericType(sourceType, 1);
+            while (TypeChecks.ImplementsIEnumerable(valueType))
+                valueType = TypeChecks.GetGenericType(valueType);
+
+            if (TypeChecks.ImplementsIDictionary(valueType))
+            {
+                var nestedKeyType = TypeChecks.GetGenericType(valueType, 0);
+                var nestedValueType = TypeChecks.GetGenericType(valueType, 1);
+                while (TypeChecks.ImplementsIEnumerable(nestedValueType))
+                    nestedValueType = TypeChecks.GetGenericType(nestedValueType);
+
+                var names = new[] { keyType.FullName, nestedKeyType.FullName, nestedValueType.FullName };
+                return allTypes.Where(x => names.Contains(x.FullName)).ToList();
+            }
 
             return allTypes.Where(x => x.FullName == keyType.FullName || x.FullName == valueType.FullName).ToList();
         }
