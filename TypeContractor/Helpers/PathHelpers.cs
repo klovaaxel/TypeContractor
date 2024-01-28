@@ -19,7 +19,7 @@ internal static class PathHelpers
         if (targetPath.SequenceEqual(relativePath))
             return ".";
 
-        return RelativePathDiff(targetPath.ToArray(), relativePath.ToArray());
+        return RelativePathDiff([.. targetPath], [.. relativePath]);
     }
 
     private static string RelativePathDiff(string[] absDirs, string[] relDirs)

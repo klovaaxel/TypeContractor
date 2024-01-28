@@ -79,13 +79,22 @@ public static class TypeChecks
 
     public static bool IsController(Type type)
     {
+        Logger.Log.Instance.LogDebug($"Checking {type.FullName}");
         ArgumentNullException.ThrowIfNull(type, nameof(type));
 
         if (type.FullName == "Microsoft.AspNetCore.Mvc.ControllerBase")
             return true;
 
-        if (type.BaseType is not null)
-            return IsController(type.BaseType);
+        try
+        {
+            if (type.BaseType is not null)
+                if (!type.BaseType.FullName!.StartsWith("System.", StringComparison.OrdinalIgnoreCase))
+                    return IsController(type.BaseType);
+        }
+        catch (FileLoadException ex)
+        {
+            Logger.Log.Instance.LogError(ex, $"Unable to load base type for {type.FullName}");
+        }
 
         return false;
     }

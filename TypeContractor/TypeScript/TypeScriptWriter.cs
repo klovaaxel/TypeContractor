@@ -60,10 +60,9 @@ public class TypeScriptWriter
             {
                 var references = allTypes
                     .Where(x => x.Properties is not null)
-                    .Select(x => new TypeScriptReference
-                    {
-                        Type = x,
-                        Properties = x.Properties!.Where(prop => prop.SourceType.FullName == type.FullName || prop.InnerSourceType?.FullName == type.FullName)
+                    .Select(x => {
+                        var properties = x.Properties!.Where(prop => prop.SourceType.FullName == type.FullName || prop.InnerSourceType?.FullName == type.FullName);
+                        return new TypeScriptReference(x, properties);
                     })
                     .Where(x => x.Properties.Any());
 

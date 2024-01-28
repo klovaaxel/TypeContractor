@@ -2,12 +2,12 @@ using System.Text.RegularExpressions;
 
 namespace TypeContractor.TypeScript;
 
-public static class NamingExtensions
+public static partial class NamingExtensions
 {
     public static string ToTypeScriptName(this string sourceName)
     {
-        return Regex
-            .Replace(sourceName, "(?:^|_| +)(.)", match => match.Groups[1].Value.ToUpperInvariant())
+        return TypeScriptPropertyNameRegex()
+            .Replace(sourceName, match => match.Groups[1].Value.ToUpperInvariant())
             .TrimStart('_')
             .ToCamelCase();
     }
@@ -37,4 +37,7 @@ public static class NamingExtensions
 
         return new string(chars);
     }
+
+    [GeneratedRegex("(?:^|_| +)(.)")]
+    private static partial Regex TypeScriptPropertyNameRegex();
 }

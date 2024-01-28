@@ -14,9 +14,8 @@ internal class Generator
     private readonly string[] _customMaps;
     private readonly string _packPath;
     private readonly int _dotnetVersion;
-    private readonly ILog _logger;
 
-    public Generator(string assemblyPath, string output, CleanMethod cleanMethod, string[] replacements, string[] strip, string[] customMaps, string packsPath, int dotnetVersion, ILog logger)
+    public Generator(string assemblyPath, string output, CleanMethod cleanMethod, string[] replacements, string[] strip, string[] customMaps, string packsPath, int dotnetVersion)
     {
         _assemblyPath = assemblyPath;
         _output = output;
@@ -26,7 +25,6 @@ internal class Generator
         _customMaps = customMaps;
         _packPath = packsPath;
         _dotnetVersion = dotnetVersion;
-        _logger = logger;
     }
 
     public Task<int> Execute()
@@ -36,75 +34,84 @@ internal class Generator
         MetadataLoadContext context;
         try
         {
-            context = ReflectionContextHelper.GetMetadataContext(_packPath, _dotnetVersion, _assemblyPath, _logger);
+            context = ReflectionContextHelper.GetMetadataContext(_packPath, _dotnetVersion, _assemblyPath, Log.Instance);
         }
         catch (FileNotFoundException ex)
         {
-            _logger.LogError(ex, ex.Message);
+            Log.Instance.LogError(ex, ex.Message);
             return Task.FromResult(1);
         }
 
-        var assembly = context.LoadFromAssemblyPath(_assemblyPath);
-        var controllers = assembly.GetTypes()
-            .Where(IsController).ToList();
-
-        if (!controllers.Any())
+        try
         {
-            _logger.LogError("Unable to find any controllers.");
-            return Task.FromResult(1);
-        }
+            Log.Instance.LogDebug($"Going to load assembly {_assemblyPath}");
+            var assembly = context.LoadFromAssemblyPath(_assemblyPath);
+            var controllers = assembly.GetTypes()
+                .Where(IsController).ToList();
 
-        var typesToLoad = new Dictionary<Assembly, HashSet<Type>>();
-        foreach (var controller in controllers)
-        {
-            _logger.LogDebug($"Checking controller {controller.FullName}.");
-            var endpoints = controller.GetMethods()
-                .Where(ReturnsActionResult).ToList();
-
-            var returnTypes = endpoints
-                .Select(UnwrappedReturnType).Where(x => x != null)
-                .Cast<Type>().ToList();
-
-            var parameterTypes = endpoints
-                .SelectMany(UnwrappedParameters).Where(x => x != null)
-                .Cast<Type>().ToList();
-
-            foreach (var returnType in returnTypes)
+            if (controllers.Count == 0)
             {
-                _logger.LogDebug($"Adding (return) type {returnType.FullName} from assembly {returnType.Assembly.FullName}");
-                typesToLoad.TryAdd(returnType.Assembly, new HashSet<Type>());
-                typesToLoad[returnType.Assembly].Add(returnType);
+                Log.Instance.LogError("Unable to find any controllers.");
+                return Task.FromResult(1);
             }
 
-            foreach (var parameterType in parameterTypes)
+            var typesToLoad = new Dictionary<Assembly, HashSet<Type>>();
+            foreach (var controller in controllers)
             {
-                _logger.LogDebug($"Adding (parameter) type {parameterType.FullName} from assembly {parameterType.Assembly.FullName}");
-                typesToLoad.TryAdd(parameterType.Assembly, new HashSet<Type>());
-                typesToLoad[parameterType.Assembly].Add(parameterType);
+                Log.Instance.LogDebug($"Checking controller {controller.FullName}.");
+                var endpoints = controller.GetMethods()
+                    .Where(ReturnsActionResult).ToList();
+
+                var returnTypes = endpoints
+                    .Select(UnwrappedReturnType).Where(x => x != null)
+                    .Cast<Type>().ToList();
+
+                var parameterTypes = endpoints
+                    .SelectMany(UnwrappedParameters).Where(x => x != null)
+                    .Cast<Type>().ToList();
+
+                foreach (var returnType in returnTypes)
+                {
+                    Log.Instance.LogDebug($"Adding (return) type {returnType.FullName} from assembly {returnType.Assembly.FullName}");
+                    typesToLoad.TryAdd(returnType.Assembly, []);
+                    typesToLoad[returnType.Assembly].Add(returnType);
+                }
+
+                foreach (var parameterType in parameterTypes)
+                {
+                    Log.Instance.LogDebug($"Adding (parameter) type {parameterType.FullName} from assembly {parameterType.Assembly.FullName}");
+                    typesToLoad.TryAdd(parameterType.Assembly, []);
+                    typesToLoad[parameterType.Assembly].Add(parameterType);
+                }
             }
-        }
 
-        if (!typesToLoad.Any())
-        {
-            _logger.LogWarning("Unable to find any types to convert that matches the expected format.");
-            return Task.FromResult(1);
-        }
-
-        var contractor = GenerateContractor(typesToLoad);
-
-        if (_cleanMethod == CleanMethod.Remove)
-        {
-            _logger.LogWarning($"Going to clean output path '{_output}'.");
-            if (Directory.Exists(_output))
+            if (typesToLoad.Count == 0)
             {
-                Directory.Delete(_output, true);
-                Directory.CreateDirectory(_output);
+                Log.Instance.LogWarning("Unable to find any types to convert that matches the expected format.");
+                return Task.FromResult(1);
             }
-        }
 
-        _logger.LogMessage("Writing types.");
-        returnCode = contractor.Build(context, _cleanMethod == CleanMethod.Smart);
-        _logger.LogMessage("Finished generating types.");
+            var contractor = GenerateContractor(typesToLoad);
+
+            if (_cleanMethod == CleanMethod.Remove)
+            {
+                Log.Instance.LogWarning($"Going to clean output path '{_output}'.");
+                if (Directory.Exists(_output))
+                {
+                    Directory.Delete(_output, true);
+                    Directory.CreateDirectory(_output);
+                }
+            }
+
+            Log.Instance.LogMessage("Writing types.");
+            returnCode = contractor.Build(context, _cleanMethod == CleanMethod.Smart);
+            Log.Instance.LogMessage("Finished generating types.");
+        }
+        catch (FileLoadException ex)
+        {
+            Log.Instance.LogError(ex, string.Format("Unable to load a file. Loaded assemblies are: {0}", string.Join(",\n", context.GetAssemblies().Select(ass => ass.FullName))));
+            returnCode = 1;
+        }
 
         return Task.FromResult(returnCode);
     }
@@ -113,10 +120,9 @@ internal class Generator
     {
         var configuration = new TypeContractorConfiguration()
                             .AddDefaultTypeMaps()
-                            .AddAssemblies(typesToLoad.Keys.ToArray())
+                            .AddAssemblies([.. typesToLoad.Keys])
                             .AddTypes(typesToLoad.Values.SelectMany(list => list.Select(t => t.FullName!)).ToArray())
-                            .SetOutputDirectory(_output!)
-                            .WithLogger(_logger);
+                            .SetOutputDirectory(_output!);
 
         if (_strip is not null)
             foreach (var strip in _strip)
@@ -128,7 +134,7 @@ internal class Generator
                 var parts = task.Split(':').Select(x => x.Trim()).ToList();
                 if (parts.Count != 2)
                 {
-                    _logger.LogWarning($"Unable to parse '{task}' into a replacement. Syntax is 'search:replacement'.");
+                    Log.Instance.LogWarning($"Unable to parse '{task}' into a replacement. Syntax is 'search:replacement'.");
                     continue;
                 }
 
@@ -141,7 +147,7 @@ internal class Generator
                 var parts = task.Split(':').Select(x => x.Trim()).ToList();
                 if (parts.Count != 2)
                 {
-                    _logger.LogWarning($"Unable to parse '{task}' into a custom type map. Syntax is 'sourceTypeWithNamespace:destinationTypeWithNamespace'.");
+                    Log.Instance.LogWarning($"Unable to parse '{task}' into a custom type map. Syntax is 'sourceTypeWithNamespace:destinationTypeWithNamespace'.");
                     continue;
                 }
 

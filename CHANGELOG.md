@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+### Fixed
+
+- Work around failing to load `System.Text.Json`, which it claims we're
+  doing twice in some cases. (#28)
+
+### Changed
+
+- Add global singleton `Log.Instance` to simplify logging in helpers
+- Minor code fixes suggested by Visual Studio
+- Use a source-generated regex for creating TypeScript names
+- Update xunit to v2.6.6
+
 ## [0.9.1] - 2024-01-07
 
 ### Added

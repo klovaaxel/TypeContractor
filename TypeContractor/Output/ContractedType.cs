@@ -1,5 +1,3 @@
-using System.Security.AccessControl;
-
 namespace TypeContractor.Output;
 
 public record ContractedType(string Name, string FullName, Type Type, Folder Folder)
@@ -16,7 +14,7 @@ public record ContractedType(string Name, string FullName, Type Type, Folder Fol
         if (type.IsNestedPublic && type.DeclaringType is not null)
             folderName.Add(type.DeclaringType.Name);
 
-        return new ContractedType(typeName, name, type, Folder.FromParts(folderName.ToArray()));
+        return new ContractedType(typeName, name, type, Folder.FromParts([.. folderName]));
     }
 
     public static string ApplyReplacements(string input, IReadOnlyDictionary<string, string> replacements)
