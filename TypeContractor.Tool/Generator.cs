@@ -42,6 +42,9 @@ internal class Generator
             return Task.FromResult(1);
         }
 
+        try
+        {
+            Log.Instance.LogDebug($"Going to load assembly {_assemblyPath}");
         var assembly = context.LoadFromAssemblyPath(_assemblyPath);
         var controllers = assembly.GetTypes()
             .Where(IsController).ToList();
@@ -103,6 +106,12 @@ internal class Generator
             Log.Instance.LogMessage("Writing types.");
         returnCode = contractor.Build(context, _cleanMethod == CleanMethod.Smart);
             Log.Instance.LogMessage("Finished generating types.");
+        }
+        catch (FileLoadException ex)
+        {
+            Log.Instance.LogError(ex, string.Format("Unable to load a file. Loaded assemblies are: {0}", string.Join(",\n", context.GetAssemblies().Select(ass => ass.FullName))));
+            returnCode = 1;
+        }
 
         return Task.FromResult(returnCode);
     }

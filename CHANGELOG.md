@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+### Fixed
+
+- Work around failing to load `System.Text.Json`, which it claims we're
+  doing twice in some cases. (#28)
+
 ### Changed
 
 - Add global singleton `Log.Instance` to simplify logging in helpers
