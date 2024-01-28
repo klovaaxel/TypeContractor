@@ -1,4 +1,5 @@
 using System.CommandLine;
+using TypeContractor.Logger;
 using TypeContractor.Tool;
 
 var rootCommand = new RootCommand("Tool for generating TypeScript definitions from C# code");
@@ -36,8 +37,8 @@ rootCommand.SetHandler(async (context) =>
     var dotnetVersionValue = context.ParseResult.GetValueForOption(dotnetVersionOptions);
     var logLevelValue = context.ParseResult.GetValueForOption(logLevelOptions);
 
-    var logger = new Logger(logLevelValue);
-    var generator = new Generator(assemblyOptionValue, outputValue, cleanValue, replacementsValue, stripValue, customMapsValue, packsPathValue, dotnetVersionValue, logger);
+    Log.Instance = new Logger(logLevelValue);
+    var generator = new Generator(assemblyOptionValue, outputValue, cleanValue, replacementsValue, stripValue, customMapsValue, packsPathValue, dotnetVersionValue);
 
     context.ExitCode = await generator.Execute();
 });

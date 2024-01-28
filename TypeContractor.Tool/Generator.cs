@@ -14,9 +14,8 @@ internal class Generator
     private readonly string[] _customMaps;
     private readonly string _packPath;
     private readonly int _dotnetVersion;
-    private readonly ILog _logger;
 
-    public Generator(string assemblyPath, string output, CleanMethod cleanMethod, string[] replacements, string[] strip, string[] customMaps, string packsPath, int dotnetVersion, ILog logger)
+    public Generator(string assemblyPath, string output, CleanMethod cleanMethod, string[] replacements, string[] strip, string[] customMaps, string packsPath, int dotnetVersion)
     {
         _assemblyPath = assemblyPath;
         _output = output;
@@ -26,7 +25,6 @@ internal class Generator
         _customMaps = customMaps;
         _packPath = packsPath;
         _dotnetVersion = dotnetVersion;
-        _logger = logger;
     }
 
     public Task<int> Execute()
@@ -36,11 +34,11 @@ internal class Generator
         MetadataLoadContext context;
         try
         {
-            context = ReflectionContextHelper.GetMetadataContext(_packPath, _dotnetVersion, _assemblyPath, _logger);
+            context = ReflectionContextHelper.GetMetadataContext(_packPath, _dotnetVersion, _assemblyPath, Log.Instance);
         }
         catch (FileNotFoundException ex)
         {
-            _logger.LogError(ex, ex.Message);
+            Log.Instance.LogError(ex, ex.Message);
             return Task.FromResult(1);
         }
 
@@ -50,14 +48,14 @@ internal class Generator
 
         if (!controllers.Any())
         {
-            _logger.LogError("Unable to find any controllers.");
+                Log.Instance.LogError("Unable to find any controllers.");
             return Task.FromResult(1);
         }
 
         var typesToLoad = new Dictionary<Assembly, HashSet<Type>>();
         foreach (var controller in controllers)
         {
-            _logger.LogDebug($"Checking controller {controller.FullName}.");
+                Log.Instance.LogDebug($"Checking controller {controller.FullName}.");
             var endpoints = controller.GetMethods()
                 .Where(ReturnsActionResult).ToList();
 
@@ -71,22 +69,22 @@ internal class Generator
 
             foreach (var returnType in returnTypes)
             {
-                _logger.LogDebug($"Adding (return) type {returnType.FullName} from assembly {returnType.Assembly.FullName}");
-                typesToLoad.TryAdd(returnType.Assembly, new HashSet<Type>());
+                    Log.Instance.LogDebug($"Adding (return) type {returnType.FullName} from assembly {returnType.Assembly.FullName}");
+                    typesToLoad.TryAdd(returnType.Assembly, []);
                 typesToLoad[returnType.Assembly].Add(returnType);
             }
 
             foreach (var parameterType in parameterTypes)
             {
-                _logger.LogDebug($"Adding (parameter) type {parameterType.FullName} from assembly {parameterType.Assembly.FullName}");
-                typesToLoad.TryAdd(parameterType.Assembly, new HashSet<Type>());
+                    Log.Instance.LogDebug($"Adding (parameter) type {parameterType.FullName} from assembly {parameterType.Assembly.FullName}");
+                    typesToLoad.TryAdd(parameterType.Assembly, []);
                 typesToLoad[parameterType.Assembly].Add(parameterType);
             }
         }
 
         if (!typesToLoad.Any())
         {
-            _logger.LogWarning("Unable to find any types to convert that matches the expected format.");
+                Log.Instance.LogWarning("Unable to find any types to convert that matches the expected format.");
             return Task.FromResult(1);
         }
 
@@ -94,7 +92,7 @@ internal class Generator
 
         if (_cleanMethod == CleanMethod.Remove)
         {
-            _logger.LogWarning($"Going to clean output path '{_output}'.");
+                Log.Instance.LogWarning($"Going to clean output path '{_output}'.");
             if (Directory.Exists(_output))
             {
                 Directory.Delete(_output, true);
@@ -102,9 +100,9 @@ internal class Generator
             }
         }
 
-        _logger.LogMessage("Writing types.");
+            Log.Instance.LogMessage("Writing types.");
         returnCode = contractor.Build(context, _cleanMethod == CleanMethod.Smart);
-        _logger.LogMessage("Finished generating types.");
+            Log.Instance.LogMessage("Finished generating types.");
 
         return Task.FromResult(returnCode);
     }
@@ -115,8 +113,7 @@ internal class Generator
                             .AddDefaultTypeMaps()
                             .AddAssemblies(typesToLoad.Keys.ToArray())
                             .AddTypes(typesToLoad.Values.SelectMany(list => list.Select(t => t.FullName!)).ToArray())
-                            .SetOutputDirectory(_output!)
-                            .WithLogger(_logger);
+                            .SetOutputDirectory(_output!);
 
         if (_strip is not null)
             foreach (var strip in _strip)
@@ -128,7 +125,7 @@ internal class Generator
                 var parts = task.Split(':').Select(x => x.Trim()).ToList();
                 if (parts.Count != 2)
                 {
-                    _logger.LogWarning($"Unable to parse '{task}' into a replacement. Syntax is 'search:replacement'.");
+                    Log.Instance.LogWarning($"Unable to parse '{task}' into a replacement. Syntax is 'search:replacement'.");
                     continue;
                 }
 
@@ -141,7 +138,7 @@ internal class Generator
                 var parts = task.Split(':').Select(x => x.Trim()).ToList();
                 if (parts.Count != 2)
                 {
-                    _logger.LogWarning($"Unable to parse '{task}' into a custom type map. Syntax is 'sourceTypeWithNamespace:destinationTypeWithNamespace'.");
+                    Log.Instance.LogWarning($"Unable to parse '{task}' into a custom type map. Syntax is 'sourceTypeWithNamespace:destinationTypeWithNamespace'.");
                     continue;
                 }
 

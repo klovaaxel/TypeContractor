@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
+using TypeContractor.Logger;
 using TypeContractor.Output;
 using TypeContractor.TypeScript;
 
@@ -92,17 +93,17 @@ public class Contractor
                         .SelectMany(r => r.Properties.Select(x => $"\n- {r.Type.Name}.{x.SourceName} ({r.Type.FullName})"))
                         .ToList();
 
-                    _configuration.Logger.LogError(ex, 
+                    Log.Instance.LogError(ex, 
                         $"Unable to generate typings for {type.Name} ({type.FullName}):\n" +
                         $"{ex.Message}\n" +
-                        $"Full type of property: {ex.PropertyWithError.SourceType.FullName}\n\n" +
+                        (ex.PropertyWithError is not null ? $"Full type of property: {ex.PropertyWithError.SourceType.FullName}\n\n" : "")+
                         $"{type.Name} is referenced by: {string.Join("", references)}\n");
 
                     returnCode = 1;
                 }
                 catch (TypeScriptImportException ex)
                 {
-                    _configuration.Logger.LogError(ex, $"Unable to generate typings for {type.Name} ({type.FullName})");
+                    Log.Instance.LogError(ex, $"Unable to generate typings for {type.Name} ({type.FullName})");
 
                     returnCode = 1;
                 }
@@ -111,7 +112,7 @@ public class Contractor
 
         if (smartClean)
         {
-            _configuration.Logger.LogMessage("Cleaning no longer relevant output files.");
+            Log.Instance.LogMessage("Cleaning no longer relevant output files.");
             var allFiles = Directory.GetFiles(_configuration.OutputPath, "*", SearchOption.AllDirectories);
             var diff = allFiles.Except(generatedFiles).ToList();
 
@@ -119,10 +120,10 @@ public class Contractor
             var generatedDirectories = allDirectories.Where(d => generatedFiles.Any(f => f.StartsWith(d, StringComparison.InvariantCultureIgnoreCase)));
             var directoryDiff = allDirectories.Except(generatedDirectories).ToList();
 
-            _configuration.Logger.LogDebug($"Found a diff of {diff.Count} items:");
+            Log.Instance.LogDebug($"Found a diff of {diff.Count} items:");
             foreach (var file in diff)
             {
-                _configuration.Logger.LogDebug($"  {file}");
+                Log.Instance.LogDebug($"  {file}");
                 try
                 {
                     if (File.Exists(file))
@@ -130,14 +131,14 @@ public class Contractor
                 }
                 catch (IOException ex)
                 {
-                    _configuration.Logger.LogWarning($"Unable to delete file {file}: {ex.Message}");
+                    Log.Instance.LogWarning($"Unable to delete file {file}: {ex.Message}");
                 }
             }
 
-            _configuration.Logger.LogDebug($"Found a diff of {directoryDiff.Count} folders:");
+            Log.Instance.LogDebug($"Found a diff of {directoryDiff.Count} folders:");
             foreach (var dir in directoryDiff)
             {
-                _configuration.Logger.LogDebug($"  {dir}");
+                Log.Instance.LogDebug($"  {dir}");
                 try
                 {
                     if (Directory.Exists(dir))
@@ -145,7 +146,7 @@ public class Contractor
                 }
                 catch (IOException ex)
                 {
-                    _configuration.Logger.LogWarning($"Unable to delete directory {dir}: {ex.Message}");
+                    Log.Instance.LogWarning($"Unable to delete directory {dir}: {ex.Message}");
                 }
             }
         }
