@@ -37,7 +37,7 @@ rootCommand.SetHandler(async (context) =>
     var dotnetVersionValue = context.ParseResult.GetValueForOption(dotnetVersionOptions);
     var logLevelValue = context.ParseResult.GetValueForOption(logLevelOptions);
 
-    Log.Instance = new Logger(logLevelValue);
+    Log.Instance = new ConsoleLogger(logLevelValue);
     var generator = new Generator(assemblyOptionValue, outputValue, cleanValue, replacementsValue, stripValue, customMapsValue, packsPathValue, dotnetVersionValue);
 
     context.ExitCode = await generator.Execute();
