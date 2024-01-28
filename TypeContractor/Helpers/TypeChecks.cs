@@ -85,6 +85,7 @@ public static class TypeChecks
             return true;
 
         if (type.BaseType is not null)
+                if (!type.BaseType.FullName!.StartsWith("System.", StringComparison.OrdinalIgnoreCase))
             return IsController(type.BaseType);
 
         return false;
