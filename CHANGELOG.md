@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Add global singleton `Log.Instance` to simplify logging in helpers
+- Minor code fixes suggested by Visual Studio
 
 ## [0.9.1] - 2024-01-07
 

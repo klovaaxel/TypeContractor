@@ -5,15 +5,17 @@ namespace TypeContractor.TypeScript;
 internal class TypeScriptReferenceException : Exception
 {
     public OutputType? Type { get; }
-    public OutputProperty PropertyWithError { get; }
+    public OutputProperty? PropertyWithError { get; }
     public IEnumerable<TypeScriptReference> References { get; }
 
     public TypeScriptReferenceException()
     {
+        References = [];
     }
 
     public TypeScriptReferenceException(string? message) : base(message)
     {
+        References = [];
     }
 
     public TypeScriptReferenceException(OutputType type, OutputProperty propertyWithError, IEnumerable<TypeScriptReference> references, Exception innerException)
@@ -26,5 +28,6 @@ internal class TypeScriptReferenceException : Exception
 
     public TypeScriptReferenceException(string? message, Exception? innerException) : base(message, innerException)
     {
+        References = [];
     }
 }

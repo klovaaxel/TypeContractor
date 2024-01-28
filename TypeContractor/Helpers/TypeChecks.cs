@@ -87,9 +87,9 @@ public static class TypeChecks
 
         try
         {
-        if (type.BaseType is not null)
+            if (type.BaseType is not null)
                 if (!type.BaseType.FullName!.StartsWith("System.", StringComparison.OrdinalIgnoreCase))
-            return IsController(type.BaseType);
+                    return IsController(type.BaseType);
         }
         catch (FileLoadException ex)
         {

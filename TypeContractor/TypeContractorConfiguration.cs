@@ -6,13 +6,13 @@ namespace TypeContractor;
 
 public class TypeContractorConfiguration
 {
-    private static readonly string[] _defaultSuffixes = new[] { "Dto", "Request", "Response" };
+    private static readonly string[] _defaultSuffixes = ["Dto", "Request", "Response"];
 
-    private readonly List<string> _suffixes = new();
-    private readonly List<string> _types = new();
-    private readonly Dictionary<string, string> _map = new();
-    private readonly Dictionary<string, string> _assemblies = new();
-    private readonly Dictionary<string, string> _replacements = new();
+    private readonly List<string> _suffixes = [];
+    private readonly List<string> _types = [];
+    private readonly Dictionary<string, string> _map = [];
+    private readonly Dictionary<string, string> _assemblies = [];
+    private readonly Dictionary<string, string> _replacements = [];
     private string? _outputPath;
 
     public IReadOnlyDictionary<string, string> TypeMaps => _map;
