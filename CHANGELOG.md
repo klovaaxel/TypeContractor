@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Handle nullable parameters to API clients better. Only send query parameters if we have a value
 - Unpack non-builtin query parameters automatically (#68)
 
+### Changed
+
+- Update xunit.analyzers from v1.15.0 to v1.16.0
+- Update FluentAssertions from v6.12.0 to v6.12.1
+- Update Microsoft.NET.Test.Sdk from v17.11.0 to 17.11.1
+
 ## [0.12.2] - 2024-09-16
 
 ### Fixed
