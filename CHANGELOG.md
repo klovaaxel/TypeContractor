@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Handle name collisions when creationg API clients (#106)
 - Add annotations package to further customize output (#107)
 - Support for .NET9
+- Options for file name casings, defaulting to `pascal` but can be set to `camel`, `snake` or `kebab`
 
 ### Changed
 
