@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Options for file name casings, defaulting to `pascal` but can be set to `camel`, `snake` or `kebab`
 
+### Changed
+
+- Bump FluentAssertions from 6.12.2 to 7.0.0
+
 ## [0.15.0] - 2024-12-02
 
 ### Added
