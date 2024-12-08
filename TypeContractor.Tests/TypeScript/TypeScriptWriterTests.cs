@@ -32,7 +32,7 @@ public class TypeScriptWriterTests : IDisposable
 		var outputTypes = BuildOutputTypes(typeof(SimpleTypes));
 
 		// Act
-		var result = Sut.Write(outputTypes.First(), outputTypes, false, Casing.Pascal);
+		var result = Sut.Write(outputTypes.First(), outputTypes, false);
 
 		// Assert
 		var file = File.ReadAllLines(result).Select(x => x.TrimStart());
@@ -55,7 +55,7 @@ public class TypeScriptWriterTests : IDisposable
 		var outputTypes = BuildOutputTypes(typeof(ComplexValueDictionary));
 
 		// Act
-		var result = Sut.Write(outputTypes.First(), outputTypes, false, Casing.Pascal);
+		var result = Sut.Write(outputTypes.First(), outputTypes, false);
 
 		// Assert
 		var file = File.ReadAllText(result);
@@ -72,7 +72,7 @@ public class TypeScriptWriterTests : IDisposable
 		var outputTypes = BuildOutputTypes(typeof(NestedValueDictionary));
 
 		// Act
-		var result = Sut.Write(outputTypes.First(), outputTypes, false, Casing.Pascal);
+		var result = Sut.Write(outputTypes.First(), outputTypes, false);
 
 		// Assert
 		var file = File.ReadAllText(result);
@@ -89,7 +89,7 @@ public class TypeScriptWriterTests : IDisposable
 		var outputTypes = BuildOutputTypes(typeof(ObsoleteResponse));
 
 		// Act
-		var result = Sut.Write(outputTypes.First(), outputTypes, false, Casing.Pascal);
+		var result = Sut.Write(outputTypes.First(), outputTypes, false);
 
 		// Assert
 		var file = File.ReadAllText(result);
@@ -109,7 +109,7 @@ public class TypeScriptWriterTests : IDisposable
 		var outputTypes = BuildOutputTypes(typeof(ObsoleteEnum));
 
 		// Act
-		var result = Sut.Write(outputTypes.First(), outputTypes, false, Casing.Pascal);
+		var result = Sut.Write(outputTypes.First(), outputTypes, false);
 
 		// Assert
 		var file = File.ReadAllText(result);
@@ -131,9 +131,9 @@ public class TypeScriptWriterTests : IDisposable
 		var outputTypes = BuildOutputTypes(typeof(TopLevelRecord));
 
 		// Act
-		var topLevelResult = Sut.Write(outputTypes.First(), outputTypes, false, Casing.Pascal);
-		var secondStoryResult = Sut.Write(outputTypes.First(x => x.Name == "SecondStoryRecord"), outputTypes, false, Casing.Pascal);
-		var someOtherDeeplyNestedResult = Sut.Write(outputTypes.First(x => x.Name == "SomeOtherDeeplyNestedRecord"), outputTypes, false, Casing.Pascal);
+		var topLevelResult = Sut.Write(outputTypes.First(), outputTypes, false);
+		var secondStoryResult = Sut.Write(outputTypes.First(x => x.Name == "SecondStoryRecord"), outputTypes, false);
+		var someOtherDeeplyNestedResult = Sut.Write(outputTypes.First(x => x.Name == "SomeOtherDeeplyNestedRecord"), outputTypes, false);
 
 		// Assert
 		var topLevelFile = File.ReadAllText(topLevelResult);
@@ -170,7 +170,7 @@ public class TypeScriptWriterTests : IDisposable
 		var outputTypes = BuildOutputTypes(typeof(SimpleTypes));
 
 		// Act
-		var result = Sut.Write(outputTypes.First(), outputTypes, true, Casing.Pascal);
+		var result = Sut.Write(outputTypes.First(), outputTypes, true);
 		var file = File.ReadAllText(result);
 
 		// Assert
@@ -194,7 +194,7 @@ public class TypeScriptWriterTests : IDisposable
 		var outputTypes = BuildOutputTypes(typeof(ReferenceType));
 
 		// Act
-		var result = Sut.Write(outputTypes.First(), outputTypes, true, Casing.Pascal);
+		var result = Sut.Write(outputTypes.First(), outputTypes, true);
 		var file = File.ReadAllText(result);
 
 		// Assert
@@ -215,7 +215,7 @@ public class TypeScriptWriterTests : IDisposable
 		var outputTypes = BuildOutputTypes(typeof(TypeWithEnum));
 
 		// Act
-		var result = Sut.Write(outputTypes.First(), outputTypes, true, Casing.Pascal);
+		var result = Sut.Write(outputTypes.First(), outputTypes, true);
 		var file = File.ReadAllText(result);
 
 		// Assert
@@ -235,7 +235,7 @@ public class TypeScriptWriterTests : IDisposable
 		var outputTypes = BuildOutputTypes(typeof(TypeWithNullableEnum));
 
 		// Act
-		var result = Sut.Write(outputTypes.First(), outputTypes, true, Casing.Pascal);
+		var result = Sut.Write(outputTypes.First(), outputTypes, true);
 		var file = File.ReadAllText(result);
 
 		// Assert
@@ -255,7 +255,7 @@ public class TypeScriptWriterTests : IDisposable
 		var outputTypes = BuildOutputTypes(typeof(TypeWithCustomDictionaryValues));
 
 		// Act
-		var result = Sut.Write(outputTypes.First(), outputTypes, true, Casing.Pascal);
+		var result = Sut.Write(outputTypes.First(), outputTypes, true);
 		var file = File.ReadAllText(result);
 
 		// Assert
@@ -275,7 +275,7 @@ public class TypeScriptWriterTests : IDisposable
 		var outputTypes = BuildOutputTypes(typeof(TypeWithCustomEnumerableDictionaryValues));
 
 		// Act
-		var result = Sut.Write(outputTypes.First(), outputTypes, true, Casing.Pascal);
+		var result = Sut.Write(outputTypes.First(), outputTypes, true);
 		var file = File.ReadAllText(result);
 
 		// Assert
@@ -295,9 +295,9 @@ public class TypeScriptWriterTests : IDisposable
 		var outputTypes = BuildOutputTypes(typeof(TopLevelRecord));
 
 		// Act
-		var topLevelResult = Sut.Write(outputTypes.First(), outputTypes, true, Casing.Pascal);
-		var secondStoryResult = Sut.Write(outputTypes.First(x => x.Name == "SecondStoryRecord"), outputTypes, true, Casing.Pascal);
-		var someOtherDeeplyNestedResult = Sut.Write(outputTypes.First(x => x.Name == "SomeOtherDeeplyNestedRecord"), outputTypes, true, Casing.Pascal);
+		var topLevelResult = Sut.Write(outputTypes.First(), outputTypes, true);
+		var secondStoryResult = Sut.Write(outputTypes.First(x => x.Name == "SecondStoryRecord"), outputTypes, true);
+		var someOtherDeeplyNestedResult = Sut.Write(outputTypes.First(x => x.Name == "SomeOtherDeeplyNestedRecord"), outputTypes, true);
 
 		// Assert
 		var topLevelFile = File.ReadAllText(topLevelResult);
@@ -336,10 +336,10 @@ public class TypeScriptWriterTests : IDisposable
 	public void Changes_File_Name_According_To_Casing(Casing casing)
 	{
 		// Arrange
-		var outputTypes = BuildOutputTypes(typeof(SimpleTypes));
+		var outputTypes = BuildOutputTypes(typeof(SimpleTypes), casing);
 
 		// Act
-		var result = Sut.Write(outputTypes.First(), outputTypes, false, casing);
+		var result = Sut.Write(outputTypes.First(), outputTypes, false);
 
 		// Assert
 		switch (casing)
@@ -359,26 +359,25 @@ public class TypeScriptWriterTests : IDisposable
 		}
 	}
 
-	[Fact]
-	public void Throws_When_Casing_Not_Supported()
+	private List<OutputType> BuildOutputTypes(Type type, Casing casing = Casing.Pascal)
 	{
-		// Arrange
-		var outputTypes = BuildOutputTypes(typeof(SimpleTypes));
+		var oldCasing = _configuration.Casing;
+		try
+		{
+			_configuration.SetCasing(casing);
+			var contractedTypes = new[] { type }
+						.Select(t => ContractedType.FromName(t.FullName!, t, _configuration));
 
-		// Act & Assert
-		Assert.Throws<ArgumentOutOfRangeException>(() => Sut.Write(outputTypes.First(), outputTypes, false, (Casing)4));
-	}
-
-	private List<OutputType> BuildOutputTypes(params Type[] types)
-	{
-		var contractedTypes = types
-					.Select(t => ContractedType.FromName(t.FullName!, t, _configuration));
-
-		return contractedTypes
-				.Select(_converter.Convert)
-				.ToList() // Needed so `converter.Convert` runs before we concat
-				.Concat(_converter.CustomMappedTypes.Values)
-				.ToList();
+			return contractedTypes
+					.Select(_converter.Convert)
+					.ToList() // Needed so `converter.Convert` runs before we concat
+					.Concat(_converter.CustomMappedTypes.Values)
+					.ToList();
+		}
+		finally
+		{
+			_configuration.SetCasing(oldCasing);
+		}
 	}
 
 	#region Test input

@@ -11,7 +11,7 @@ public class TypeScriptWriter(string outputPath)
 	private static readonly Encoding _utf8WithoutBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
 	private readonly StringBuilder _builder = new();
 
-	public string Write(OutputType outputType, IEnumerable<OutputType> allTypes, bool buildZodSchema, Casing casing)
+	public string Write(OutputType outputType, IEnumerable<OutputType> allTypes, bool buildZodSchema)
 	{
 		ArgumentNullException.ThrowIfNull(outputType);
 

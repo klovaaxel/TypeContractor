@@ -86,7 +86,7 @@ public class Contractor
 			{
 				try
 				{
-					var filePath = writer.Write(type, outputTypes, Configuration.BuildZodSchemas, Configuration.Casing);
+					var filePath = writer.Write(type, outputTypes, Configuration.BuildZodSchemas);
 					generatedFiles.Add(filePath);
 				}
 				catch (TypeScriptReferenceException ex)
