@@ -14,9 +14,7 @@ public class TypeContractorConfiguration
 	private readonly Dictionary<string, string> _map = [];
 	private readonly Dictionary<string, string> _assemblies = [];
 	private readonly Dictionary<string, string> _replacements = [];
-	private string? _relativeRoot;
 	private string? _outputPath;
-	private bool _buildZodSchemas;
 	private List<ApiClient> _apiClients = [];
 	private string? _apiClientTemplate;
 	private Casing? _casing;
@@ -27,8 +25,8 @@ public class TypeContractorConfiguration
 	public IReadOnlyDictionary<string, string> Assemblies => _assemblies;
 	public IReadOnlyDictionary<string, string> Replacements => _replacements;
 	public string OutputPath => _outputPath ?? throw new InvalidOperationException("Output path is not configured");
-	public string? RelativeRoot => _relativeRoot;
-	public bool BuildZodSchemas => _buildZodSchemas;
+	public string? RelativeRoot { get; private set; }
+	public bool BuildZodSchemas { get; private set; }
 	public bool GenerateApiClients => _apiClients.Count != 0;
 	public IReadOnlyList<ApiClient> ApiClients => _apiClients.AsReadOnly();
 	public string ApiClientTemplate => _apiClientTemplate ?? "aurelia";
@@ -264,7 +262,7 @@ public class TypeContractorConfiguration
 	/// <returns>The configuration object for continued chaining</returns>
 	public TypeContractorConfiguration SetRelativeRoot(string relativeRoot)
 	{
-		_relativeRoot = relativeRoot;
+		RelativeRoot = relativeRoot;
 
 		return this;
 	}
@@ -275,7 +273,7 @@ public class TypeContractorConfiguration
 	/// <returns>The configuration object for continued chaining</returns>
 	public TypeContractorConfiguration EnableZodSchemas()
 	{
-		_buildZodSchemas = true;
+		BuildZodSchemas = true;
 
 		return this;
 	}

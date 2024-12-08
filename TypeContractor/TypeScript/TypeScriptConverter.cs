@@ -4,17 +4,8 @@ using TypeContractor.Output;
 
 namespace TypeContractor.TypeScript;
 
-public class TypeScriptConverter
+public class TypeScriptConverter(TypeContractorConfiguration configuration, MetadataLoadContext metadataLoadContext)
 {
-	private readonly TypeContractorConfiguration _configuration;
-	private readonly MetadataLoadContext _metadataLoadContext;
-
-	public TypeScriptConverter(TypeContractorConfiguration configuration, MetadataLoadContext metadataLoadContext)
-	{
-		_configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-		_metadataLoadContext = metadataLoadContext ?? throw new ArgumentNullException(nameof(metadataLoadContext));
-	}
-
 	public Dictionary<Type, OutputType> CustomMappedTypes { get; } = [];
 
 	public OutputType Convert(ContractedType contractedType)
@@ -30,8 +21,8 @@ public class TypeScriptConverter
 		return new(
 			type.Name,
 			type.FullName!,
-			CasingHelpers.ToCasing(type.Name.Replace("_", ""), _configuration.Casing),
-			contractedType ?? ContractedType.FromName(type.FullName!, type, _configuration),
+			CasingHelpers.ToCasing(type.Name.Replace("_", ""), configuration.Casing),
+			contractedType ?? ContractedType.FromName(type.FullName!, type, configuration),
 			type.IsEnum,
 			type.IsEnum ? null : GetProperties(type).Distinct().ToList(),
 			type.IsEnum ? GetEnumProperties(type) : null
@@ -40,7 +31,7 @@ public class TypeScriptConverter
 
 	private List<OutputEnumMember> GetEnumProperties(Type type)
 	{
-		var matchAssembly = _metadataLoadContext.LoadFromAssemblyName(type.Assembly.FullName!);
+		var matchAssembly = metadataLoadContext.LoadFromAssemblyName(type.Assembly.FullName!);
 		var matchedEnumType = matchAssembly.GetType(type.FullName!)!;
 
 		var underlyingValues = matchedEnumType.GetEnumValuesAsUnderlyingType();
@@ -103,10 +94,10 @@ public class TypeScriptConverter
 
 	public DestinationType GetDestinationType(in Type sourceType, IEnumerable<CustomAttributeData> customAttributes, bool isReadonly, bool isNullable)
 	{
-		if (_configuration.TypeMaps.TryGetValue(sourceType.FullName!, out string? destType))
+		if (configuration.TypeMaps.TryGetValue(sourceType.FullName!, out var destType))
 			return new DestinationType(destType.Replace("[]", string.Empty), sourceType.FullName, true, destType.Contains("[]"), isReadonly, isNullable || TypeChecks.IsNullable(sourceType), null);
 
-		if (CustomMappedTypes.TryGetValue(sourceType, out OutputType? customType))
+		if (CustomMappedTypes.TryGetValue(sourceType, out var customType))
 			return new DestinationType(customType.Name, customType.FullName, false, false, isReadonly, TypeChecks.IsNullable(sourceType), null);
 
 		if (TypeChecks.ImplementsIDictionary(sourceType))
