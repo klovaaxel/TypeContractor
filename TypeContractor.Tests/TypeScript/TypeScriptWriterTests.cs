@@ -328,6 +328,47 @@ public class TypeScriptWriterTests : IDisposable
 			.And.Contain("});");
 	}
 
+	[Theory]
+	[InlineData(Casing.Camel)]
+	[InlineData(Casing.Pascal)]
+	[InlineData(Casing.Kebab)]
+	[InlineData(Casing.Snake)]
+	public void Changes_File_Name_According_To_Casing(Casing casing)
+	{
+		// Arrange
+		var outputTypes = BuildOutputTypes(typeof(SimpleTypes));
+
+		// Act
+		var result = Sut.Write(outputTypes.First(), outputTypes, false, casing);
+
+		// Assert
+		switch (casing)
+		{
+			case Casing.Camel:
+				result.Should().EndWith("typeContractor\\tests\\typeScript\\simpleTypes.ts");
+				break;
+			case Casing.Pascal:
+				result.Should().EndWith("TypeContractor\\Tests\\TypeScript\\SimpleTypes.ts");
+				break;
+			case Casing.Kebab:
+				result.Should().EndWith("type-contractor\\tests\\type-script\\simple-types.ts");
+				break;
+			case Casing.Snake:
+				result.Should().EndWith("type_contractor\\tests\\type_script\\simple_types.ts");
+				break;
+		}
+	}
+
+	[Fact]
+	public void Throws_When_Casing_Not_Supported()
+	{
+		// Arrange
+		var outputTypes = BuildOutputTypes(typeof(SimpleTypes));
+
+		// Act & Assert
+		Assert.Throws<ArgumentOutOfRangeException>(() => Sut.Write(outputTypes.First(), outputTypes, false, (Casing)4));
+	}
+
 	private List<OutputType> BuildOutputTypes(params Type[] types)
 	{
 		var contractedTypes = types
