@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Bump FluentAssertions from 6.12.2 to 7.0.0
+- Bump xunit.runner.visualstudio to from 2.8.2 to 3.0.0
+- Bump xunit.analyzers from 1.17.0 to 1.18.0
 
 ## [0.15.0] - 2024-12-02
 
