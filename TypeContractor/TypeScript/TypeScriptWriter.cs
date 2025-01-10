@@ -138,9 +138,12 @@ public class TypeScriptWriter(string outputPath)
 			var isReadonly = property.IsReadonly ? "readonly " : "";
 
 			var destinationType = property.GenericType?.Name ?? property.DestinationType;
+			var typeArguments = (property.GenericTypeArguments?.Count() ?? 0) > 0
+				? $"<{string.Join(", ", property.GenericTypeArguments!.Select(x => x.TypeName))}>"
+				: "";
 
 			_builder.AppendDeprecationComment(property.Obsolete);
-			_builder.AppendFormat("  {4}{0}{1}: {2}{3};\r\n", property.DestinationName, nullable, destinationType, array, isReadonly);
+			_builder.AppendFormat("  {4}{0}{1}: {2}{5}{3};\r\n", property.DestinationName, nullable, destinationType, array, isReadonly, typeArguments);
 		}
 
 		foreach (var member in type.EnumMembers ?? Enumerable.Empty<OutputEnumMember>())

@@ -99,8 +99,9 @@ public static class TypeChecks
 	{
 		ArgumentNullException.ThrowIfNull(sourceType, nameof(sourceType));
 
+
 		if (sourceType.GenericTypeArguments.Length == 0 && sourceType.BaseType is not null)
-			return GetGenericType(sourceType.BaseType);
+			return sourceType.IsGenericParameter ? sourceType : GetGenericType(sourceType.BaseType);
 
 		return sourceType.GenericTypeArguments.Length > 0
 			? sourceType.GenericTypeArguments.ElementAt(index)

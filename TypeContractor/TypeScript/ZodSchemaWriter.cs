@@ -65,6 +65,10 @@ namespace TypeContractor.TypeScript
 
 		private static string? GetZodOutputType(OutputProperty property, IEnumerable<OutputType> allTypes)
 		{
+			// If we have a generic type, we can't generate a schema for it
+			if (property.GenericType is not null)
+				return null;
+
 			if (!property.IsBuiltin && property.SourceType.IsEnum)
 				return $"z.nativeEnum({property.SourceType.Name})";
 			else if (!property.IsBuiltin && property.IsNullable && property.SourceType.IsGenericType)

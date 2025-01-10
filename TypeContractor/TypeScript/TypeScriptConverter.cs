@@ -27,8 +27,7 @@ public class TypeScriptConverter(TypeContractorConfiguration configuration, Meta
 			contractedType ?? ContractedType.FromName(type.FullName!, type, configuration),
 			type.IsEnum,
 			type.IsEnum ? null : GetProperties(type).Distinct().ToList(),
-			type.IsEnum ? GetEnumProperties(type) : null,
-			type.GenericTypeArguments
+			type.IsEnum ? GetEnumProperties(type) : null
 		);
 	}
 
@@ -87,6 +86,13 @@ public class TypeScriptConverter(TypeContractorConfiguration configuration, Meta
 			outputProperty.Obsolete = obsolete is not null ? new ObsoleteInfo((string?)obsolete.ConstructorArguments.FirstOrDefault().Value) : null;
 
 			outputProperty.GenericType = genericProperties.Find(x => x.Name == property.Name)?.PropertyType;
+
+			outputProperty.GenericTypeArguments = property.PropertyType.GenericTypeArguments.Length > 0 && outputProperty.GenericType is null
+				? property.PropertyType.GenericTypeArguments
+					.Select(x => GetDestinationType(x, x.CustomAttributes, false, TypeChecks.IsNullable(x)))
+				: null;
+
+
 			outputProperties.Add(outputProperty);
 		}
 
@@ -126,7 +132,7 @@ public class TypeScriptConverter(TypeContractorConfiguration configuration, Meta
 		{
 			var innerType = TypeChecks.GetGenericType(sourceType);
 
-			var (TypeName, FullName, _, IsBuiltin, _, IsReadonly, IsNullable, _, _) = GetDestinationType(innerType, customAttributes, isReadonly, isNullable);
+			var (TypeName, FullName, _, IsBuiltin, _, IsReadonly, IsNullable, _) = GetDestinationType(innerType, customAttributes, isReadonly, isNullable);
 			return new DestinationType(TypeName, FullName, IsBuiltin, true, IsReadonly, IsNullable, innerType);
 		}
 

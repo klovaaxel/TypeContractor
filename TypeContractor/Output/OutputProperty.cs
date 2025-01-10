@@ -14,6 +14,7 @@ public class OutputProperty(string sourceName, Type sourceType, Type? innerSourc
 	public bool IsReadonly { get; set; } = isReadonly;
 	public ObsoleteInfo? Obsolete { get; set; }
 	public Type? GenericType { get; set; }
+	public IEnumerable<DestinationType>? GenericTypeArguments { get; set; }
 
 	/// <summary>
 	/// Returns the <see cref="DestinationType"/> and array brackets if the type is an array

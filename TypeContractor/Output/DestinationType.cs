@@ -8,8 +8,7 @@ public record DestinationType(
 	bool IsArray,
 	bool IsReadonly,
 	bool IsNullable,
-	Type? InnerType,
-	int GenericTypeArguments)
+	Type? InnerType)
 {
 	public DestinationType(
 		string typeName,
@@ -20,7 +19,7 @@ public record DestinationType(
 		bool isNullable,
 		Type? innerType,
 		string? importType = null,
-		int genericTypeArguments = 0) : this(typeName, fullName, importType ?? typeName, isBuiltin, isArray, isReadonly, isNullable, innerType, genericTypeArguments)
+		int genericTypeArguments = 0) : this(typeName, fullName, importType ?? typeName, isBuiltin, isArray, isReadonly, isNullable, innerType)
 	{
 	}
 
