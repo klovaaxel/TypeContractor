@@ -39,6 +39,19 @@ public class TypeScriptConverterTests
 		result.Properties.Should().HaveCount(6);
 	}
 
+	[Fact]
+	public void Can_Convert_Type_With_Generic_Type_Arguments()
+	{
+		var result = Sut.Convert(typeof(TypeWithTypeArguments<int, int>));
+
+		result.Should().NotBeNull();
+		result.Name.Should().Be("TypeWithTypeArguments`2");
+		result.FullName.Should().Be("TypeContractor.Tests.TypeScript.TypeScriptConverterTests+TypeWithTypeArguments`2[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]");
+		result.IsEnum.Should().BeFalse();
+		result.EnumMembers.Should().BeNull();
+		result.Properties.Should().HaveCount(2);
+	}
+
 	[Theory]
 	[InlineData(0)]
 	[InlineData(1)]
@@ -479,5 +492,11 @@ public class TypeScriptConverterTests
 		var resolver = new PathAssemblyResolver(paths);
 
 		return new MetadataLoadContext(resolver);
+	}
+
+	private class TypeWithTypeArguments<T1, T2>
+	{
+		public T1 First { get; set; }
+		public T2 Second { get; set; }
 	}
 }

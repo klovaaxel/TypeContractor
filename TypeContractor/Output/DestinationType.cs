@@ -1,8 +1,26 @@
 namespace TypeContractor.Output;
 
-public record DestinationType(string TypeName, string? FullName, string ImportType, bool IsBuiltin, bool IsArray, bool IsReadonly, bool IsNullable, Type? InnerType)
+public record DestinationType(
+	string TypeName,
+	string? FullName,
+	string ImportType,
+	bool IsBuiltin,
+	bool IsArray,
+	bool IsReadonly,
+	bool IsNullable,
+	Type? InnerType,
+	int GenericTypeArguments)
 {
-	public DestinationType(string typeName, string? fullName, bool isBuiltin, bool isArray, bool isReadonly, bool isNullable, Type? innerType, string? importType = null) : this(typeName, fullName, importType ?? typeName, isBuiltin, isArray, isReadonly, isNullable, innerType)
+	public DestinationType(
+		string typeName,
+		string? fullName,
+		bool isBuiltin,
+		bool isArray,
+		bool isReadonly,
+		bool isNullable,
+		Type? innerType,
+		string? importType = null,
+		int genericTypeArguments = 0) : this(typeName, fullName, importType ?? typeName, isBuiltin, isArray, isReadonly, isNullable, innerType, genericTypeArguments)
 	{
 	}
 

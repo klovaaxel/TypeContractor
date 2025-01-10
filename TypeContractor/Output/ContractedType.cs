@@ -9,6 +9,8 @@ public record ContractedType(string Name, string FullName, Type Type, Folder Fol
 		ArgumentNullException.ThrowIfNull(type, nameof(type));
 		ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
 
+		name = name.Split('`').First();
+
 		var nameparts = ApplyReplacements(name, configuration.Replacements).Split('.');
 		var typeName = nameparts.Last();
 		var folderName = nameparts

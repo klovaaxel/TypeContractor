@@ -18,14 +18,17 @@ public class TypeScriptConverter(TypeContractorConfiguration configuration, Meta
 	{
 		ArgumentNullException.ThrowIfNull(type);
 
+		var name = type.Name.Split('`').First();
+
 		return new(
-			type.Name,
+			name,
 			type.FullName!,
-			CasingHelpers.ToCasing(type.Name.Replace("_", ""), configuration.Casing),
+			CasingHelpers.ToCasing(name.Replace("_", ""), configuration.Casing),
 			contractedType ?? ContractedType.FromName(type.FullName!, type, configuration),
 			type.IsEnum,
 			type.IsEnum ? null : GetProperties(type).Distinct().ToList(),
-			type.IsEnum ? GetEnumProperties(type) : null
+			type.IsEnum ? GetEnumProperties(type) : null,
+			type.GenericTypeArguments
 		);
 	}
 
@@ -54,6 +57,13 @@ public class TypeScriptConverter(TypeContractorConfiguration configuration, Meta
 
 		// Find all properties
 		var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+		var genericProperties = new List<PropertyInfo>();
+
+		if (type.IsGenericType)
+		{
+			var genericTypeDefinition = type.GetGenericTypeDefinition();
+			genericProperties = [.. genericTypeDefinition.GetProperties().Where(x => !properties.Any(y => y.PropertyType == x.PropertyType))];
+		}
 
 		// Evaluate type of property
 		foreach (var property in properties)
@@ -76,6 +86,7 @@ public class TypeScriptConverter(TypeContractorConfiguration configuration, Meta
 			var obsolete = property.CustomAttributes.FirstOrDefault(x => x.AttributeType.FullName == "System.ObsoleteAttribute");
 			outputProperty.Obsolete = obsolete is not null ? new ObsoleteInfo((string?)obsolete.ConstructorArguments.FirstOrDefault().Value) : null;
 
+			outputProperty.GenericType = genericProperties.Find(x => x.Name == property.Name)?.PropertyType;
 			outputProperties.Add(outputProperty);
 		}
 
@@ -115,7 +126,7 @@ public class TypeScriptConverter(TypeContractorConfiguration configuration, Meta
 		{
 			var innerType = TypeChecks.GetGenericType(sourceType);
 
-			var (TypeName, FullName, _, IsBuiltin, _, IsReadonly, IsNullable, _) = GetDestinationType(innerType, customAttributes, isReadonly, isNullable);
+			var (TypeName, FullName, _, IsBuiltin, _, IsReadonly, IsNullable, _, _) = GetDestinationType(innerType, customAttributes, isReadonly, isNullable);
 			return new DestinationType(TypeName, FullName, IsBuiltin, true, IsReadonly, IsNullable, innerType);
 		}
 
@@ -141,6 +152,7 @@ public class TypeScriptConverter(TypeContractorConfiguration configuration, Meta
 
 		// FIXME: Check if this is one of our types?
 		var outputType = Convert(sourceType);
+		// FIXME: We should probably do some conversion of the generic attribute types here
 		CustomMappedTypes.Add(sourceType, outputType);
 		return new DestinationType(outputType.Name, outputType.FullName, false, false, isReadonly, isNullable || TypeChecks.IsNullable(sourceType), null);
 

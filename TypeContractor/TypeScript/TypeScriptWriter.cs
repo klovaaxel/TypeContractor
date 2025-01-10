@@ -117,7 +117,17 @@ public class TypeScriptWriter(string outputPath)
 		}
 		else
 		{
-			_builder.AppendLine($"export interface {type.Name} {{");
+			var genericPropertyTypes = type.Properties?
+				.Where(x => x.GenericType is not null)
+				.Select(x => x.GenericType?.Name)
+				.Distinct()
+				.ToList() ?? [];
+
+			var genericTypeArguments = genericPropertyTypes.Count > 0
+				? $"<{string.Join(", ", genericPropertyTypes)}>"
+				: "";
+
+			_builder.AppendLine($"export interface {type.Name}{genericTypeArguments} {{");
 		}
 
 		// Body
@@ -127,8 +137,10 @@ public class TypeScriptWriter(string outputPath)
 			var array = property.IsArray ? "[]" : "";
 			var isReadonly = property.IsReadonly ? "readonly " : "";
 
+			var destinationType = property.GenericType?.Name ?? property.DestinationType;
+
 			_builder.AppendDeprecationComment(property.Obsolete);
-			_builder.AppendFormat("  {4}{0}{1}: {2}{3};\r\n", property.DestinationName, nullable, property.DestinationType, array, isReadonly);
+			_builder.AppendFormat("  {4}{0}{1}: {2}{3};\r\n", property.DestinationName, nullable, destinationType, array, isReadonly);
 		}
 
 		foreach (var member in type.EnumMembers ?? Enumerable.Empty<OutputEnumMember>())
@@ -143,7 +155,7 @@ public class TypeScriptWriter(string outputPath)
 
 	private static List<OutputType> GetImportedTypes(IEnumerable<OutputType> allTypes, OutputProperty import)
 	{
-		var sourceType = import.SourceType;
+		var sourceType = import.GenericType ?? import.SourceType;
 		if (TypeChecks.ImplementsIEnumerable(import.SourceType) || TypeChecks.IsNullable(import.SourceType))
 			sourceType = TypeChecks.GetGenericType(sourceType);
 

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TypeContractor.Tool": {
+      "commandName": "Project",
+      "commandLineArgs": "--assembly D:\\APP_OpenHRLon\\Web\\bin\\Debug\\net8.0\\Hogia.OpenHR.Lon.Web.dll --output D:\\APP_OpenHRLon\\Web\\App\\src\\api --generate-api-clients --casing kebab --build-zod-schemas"
+    }
+  }
+}
